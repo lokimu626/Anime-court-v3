@@ -1,31 +1,34 @@
-<!DOCTYPE html>
+            <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime Court ⚖️</title>
+    <title>Anime Court ⚖️ Global</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; }
       .card { transition: all 0.2s ease; }
       .card:hover { transform: translateY(-2px); }
       .tab-active { background-color: rgb(147 51 234); }
+      .live-dot { animation: pulse 2s infinite; }
+      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-2xl">
         <header class="text-center mb-6">
             <h1 class="text-4xl font-bold mb-2">⚖️ Anime Court</h1>
-            <p class="text-gray-400">Anonymous arguments & recommendations</p>
+            <p class="text-gray-400 flex items-center justify-center gap-2">
+                <span class="w-2 h-2 bg-green-500 rounded-full live-dot"></span>
+                Live Courtroom - Global
+            </p>
         </header>
 
-        <!-- Tabs -->
         <div class="flex gap-2 mb-6">
             <button id="courtTab" onclick="switchTab('court')" class="flex-1 bg-gray-800 rounded p-3 font-bold tab-active">Court Cases</button>
             <button id="recTab" onclick="switchTab('rec')" class="flex-1 bg-gray-800 rounded p-3 font-bold">Need Recs</button>
         </div>
 
-        <!-- Court Cases View -->
         <div id="courtView">
             <div class="bg-gray-800 rounded-lg p-6 mb-6 card">
                 <h2 class="text-xl font-bold mb-4">File a New Case</h2>
@@ -34,13 +37,12 @@
                 <textarea id="caseDesc" placeholder="Your argument... Anonymous." 
                           class="w-full bg-gray-700 rounded p-3 mb-3 h-24 outline-none"></textarea>
                 <button onclick="addCase()" class="w-full bg-purple-600 hover:bg-purple-700 rounded p-3 font-bold">
-                    Submit to Court
+                    Submit to Global Court
                 </button>
             </div>
             <div id="cases" class="space-y-4"></div>
         </div>
 
-        <!-- Recommendations View -->
         <div id="recView" class="hidden">
             <div class="bg-gray-800 rounded-lg p-6 mb-6 card">
                 <h2 class="text-xl font-bold mb-4">Request Anime Recs</h2>
@@ -49,35 +51,69 @@
                 <textarea id="recDesc" placeholder="Want: Dark, psychological, no romance. Go." 
                           class="w-full bg-gray-700 rounded p-3 mb-3 h-24 outline-none"></textarea>
                 <button onclick="addRecRequest()" class="w-full bg-blue-600 hover:bg-blue-700 rounded p-3 font-bold">
-                    Ask The Jury
+                    Ask The Global Jury
                 </button>
             </div>
             <div id="recs" class="space-y-4"></div>
         </div>
     </div>
 
-    <script>
-        let cases = JSON.parse(localStorage.getItem('animeCases') || '[]');
-        let recs = JSON.parse(localStorage.getItem('animeRecs') || '[]');
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, push, onValue, runTransaction, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyCx11cXPbKVzO_bWCwCQVH6z_XkiAv2QCc",
+          authDomain: "anime---court-11a28.firebaseapp.com",
+          databaseURL: "https://anime---court-11a28-default-rtdb.firebaseio.com",
+          projectId: "anime---court-11a28",
+          storageBucket: "anime---court-11a28.firebasestorage.app",
+          messagingSenderId: "30113651354",
+          appId: "1:30113651354:web:38203b7ef5e971bebfdd23"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const casesRef = ref(db, 'cases');
+        const recsRef = ref(db, 'recs');
         
-        function switchTab(tab) {
-            document.getElementById('courtView').classList.toggle('hidden', tab!== 'court');
-            document.getElementById('recView').classList.toggle('hidden', tab!== 'rec');
+        let cases = [];
+        let recs = [];
+
+        onValue(casesRef, (snapshot) => {
+            const data = snapshot.val();
+            cases = data ? Object.entries(data).map(([id, val]) => ({id, ...val})).reverse() : [];
+            renderCases();
+        });
+
+        onValue(recsRef, (snapshot) => {
+            const data = snapshot.val();
+            recs = data ? Object.entries(data).map(([id, val]) => ({id, ...val})).reverse() : [];
+            renderRecs();
+        });
+        
+        window.switchTab = (tab) => {
+            document.getElementById('courtView').classList.toggle('hidden', tab !== 'court');
+            document.getElementById('recView').classList.toggle('hidden', tab !== 'rec');
             document.getElementById('courtTab').classList.toggle('tab-active', tab === 'court');
             document.getElementById('recTab').classList.toggle('tab-active', tab === 'rec');
         }
         
         function renderCases() {
             const container = document.getElementById('cases');
-            container.innerHTML = cases.map((c, i) => `
+            if (cases.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center">No cases yet. File the first one!</p>';
+                return;
+            }
+            container.innerHTML = cases.map((c) => `
                 <div class="bg-gray-800 rounded-lg p-6 card">
                     <h3 class="text-lg font-bold mb-2">${c.title}</h3>
                     <p class="text-gray-300 mb-4">${c.desc}</p>
                     <div class="flex gap-3">
-                        <button onclick="vote(${i}, 'guilty')" class="flex-1 bg-red-600/20 hover:bg-red-600/40 rounded p-2">
+                        <button onclick="vote('${c.id}', 'guilty')" class="flex-1 bg-red-600/20 hover:bg-red-600/40 rounded p-2">
                             Guilty 👎 ${c.guilty || 0}
                         </button>
-                        <button onclick="vote(${i}, 'innocent')" class="flex-1 bg-green-600/20 hover:bg-green-600/40 rounded p-2">
+                        <button onclick="vote('${c.id}', 'innocent')" class="flex-1 bg-green-600/20 hover:bg-green-600/40 rounded p-2">
                             Innocent 👍 ${c.innocent || 0}
                         </button>
                     </div>
@@ -87,14 +123,18 @@
         
         function renderRecs() {
             const container = document.getElementById('recs');
-            container.innerHTML = recs.map((r, i) => `
+            if (recs.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center">No requests yet. Ask for recs!</p>';
+                return;
+            }
+            container.innerHTML = recs.map((r) => `
                 <div class="bg-gray-800 rounded-lg p-6 card">
                     <h3 class="text-lg font-bold mb-2">Looking for: ${r.title}</h3>
                     <p class="text-gray-300 mb-4">${r.desc}</p>
                     <div class="bg-gray-700 rounded p-3 mb-3">
-                        <input id="recReply${i}" type="text" placeholder="Drop a rec: Monster, Parasyte..." 
+                        <input id="recReply-${r.id}" type="text" placeholder="Drop a rec: Monster, Parasyte..." 
                                class="w-full bg-gray-600 rounded p-2 mb-2 outline-none text-sm">
-                        <button onclick="addRecReply(${i})" class="text-xs bg-blue-600 hover:bg-blue-700 rounded px-3 py-1">Reply</button>
+                        <button onclick="addRecReply('${r.id}')" class="text-xs bg-blue-600 hover:bg-blue-700 rounded px-3 py-1">Reply</button>
                     </div>
                     <div class="space-y-2">
                         ${(r.replies || []).map(reply => `
@@ -107,62 +147,39 @@
             `).join('');
         }
         
-        function addCase() {
+        window.addCase = () => {
             const title = document.getElementById('caseTitle').value;
             const desc = document.getElementById('caseDesc').value;
-            if (!title ||!desc) return;
-            cases.unshift({ title, desc, guilty: 0, innocent: 0 });
-            localStorage.setItem('animeCases', JSON.stringify(cases));
+            if (!title || !desc) return alert('Fill both fields, Judge');
+            push(casesRef, { title, desc, guilty: 0, innocent: 0, timestamp: Date.now() });
             document.getElementById('caseTitle').value = '';
             document.getElementById('caseDesc').value = '';
-            renderCases();
         }
         
-        function vote(index, verdict) {
-            cases[index][verdict]++;
-            localStorage.setItem('animeCases', JSON.stringify(cases));
-            renderCases();
+        window.vote = (id, verdict) => {
+            const voteRef = ref(db, `cases/${id}/${verdict}`);
+            runTransaction(voteRef, (current) => (current || 0) + 1);
         }
         
-        function addRecRequest() {
+        window.addRecRequest = () => {
             const title = document.getElementById('recTitle').value;
             const desc = document.getElementById('recDesc').value;
-            if (!title ||!desc) return;
-            recs.unshift({ title, desc, replies: [] });
-            localStorage.setItem('animeRecs', JSON.stringify(recs));
+            if (!title || !desc) return alert('Fill both fields, Judge');
+            push(recsRef, { title, desc, replies: [], timestamp: Date.now() });
             document.getElementById('recTitle').value = '';
             document.getElementById('recDesc').value = '';
-            renderRecs();
         }
         
-        function addRecReply(index) {
-            const input = document.getElementById(`recReply${index}`);
+        window.addRecReply = (id) => {
+            const input = document.getElementById(`recReply-${id}`);
             if (!input.value) return;
-            if (!recs[index].replies) recs[index].replies = [];
-            recs[index].replies.unshift(input.value);
-            localStorage.setItem('animeRecs', JSON.stringify(recs));
+            const repliesRef = ref(db, `recs/${id}/replies`);
+            onValue(repliesRef, (snapshot) => {
+                const current = snapshot.val() || [];
+                update(ref(db, `recs/${id}`), { replies: [...current, input.value] });
+            }, { onlyOnce: true });
             input.value = '';
-            renderRecs();
         }
-        
-        // Starter data
-        if (cases.length === 0) {
-            cases.push({
-                title: "Case: Is Naruto a better MC than Luffy?",
-                desc: "Anonymous plaintiff argues Naruto had better character development. Defense?",
-                guilty: 25, innocent: 9
-            });
-        }
-        if (recs.length === 0) {
-            recs.push({
-                title: "AOT, Death Note, Code Geass",
-                desc: "Want something with big brain MC and politics. No slice of life.",
-                replies: ["Monster - Peak psychological thriller", "Legend of Galactic Heroes - If you got time"]
-            });
-        }
-        
-        renderCases();
-        renderRecs();
     </script>
 </body>
 </html>
