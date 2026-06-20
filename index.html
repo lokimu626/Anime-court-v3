@@ -1,118 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Anime Court V3</title>
-  <style>
-    * { box-sizing: border-box; }
-    body { font-family: system-ui, sans-serif; background: #0f0f0f; color: #fff;
-           margin: 0; padding: 20px; text-align: center; }
-  .container { max-width: 600px; margin: 0 auto; }
-    button { background: #7c3aed; color: white; border: none; padding: 12px 20px;
-             margin: 8px; border-radius: 8px; font-size: 16px; cursor: pointer; }
-    button:hover { background: #6d28d9; }
-  .vibe-btn { background: #1f2937; }
-  .vibe-btn.active { background: #7c3aed; box-shadow: 0 0 0 2px #a78bfa; }
-  .card { background: #1f2937; padding: 24px; border-radius: 12px; margin: 20px 0;
-            border: 1px solid #374151; }
-  .actions { margin-top: 20px; }
-  .next-btn { background: #059669; }
-  .next-btn:hover { background: #047857; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Court ⚖️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; }
+       .card { transition: all 0.2s ease; }
+       .card:hover { transform: translateY(-2px); }
+    </style>
 </head>
-<body>
-  <div class="container">
-    <h1>Anime Court ⚖️</h1>
-    <div id="app"></div>
-    <div id="actions" class="actions"></div>
-  </div>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2">⚖️ Anime Court</h1>
+            <p class="text-gray-400">Anonymous arguments. Verdicts by the people.</p>
+        </header>
 
-  <script>
-    const VIBES = ['Dark', 'Wholesome', 'Action', 'Romance', 'Comedy'];
-    const ANIME_TAKES = [
-      { title: 'Attack on Titan', text: 'Overrated and edgy for the sake of it' },
-      { title: 'One Piece', text: 'Too long, will never finish' },
-      { title: 'Demon Slayer', text: 'Carried by animation, mid story' },
-      { title: 'Your Name', text: 'Pretty but emotionally manipulative' },
-      { title: 'Naruto', text: 'Talk no Jutsu ruined every fight' },
-      { title: 'Death Note', text: 'Fell off hard after L died' }
-    ];
+        <div class="bg-gray-800 rounded-lg p-6 mb-6 card">
+            <h2 class="text-xl font-bold mb-4">File a New Case</h2>
+            <input id="caseTitle" type="text" placeholder="Case: Is One Piece too long?" 
+                   class="w-full bg-gray-700 rounded p-3 mb-3 outline-none">
+            <textarea id="caseDesc" placeholder="Your argument... Anonymous." 
+                      class="w-full bg-gray-700 rounded p-3 mb-3 h-24 outline-none"></textarea>
+            <button onclick="addCase()" class="w-full bg-purple-600 hover:bg-purple-700 rounded p-3 font-bold">
+                Submit to Court
+            </button>
+        </div>
 
-    let selectedVibes = [];
-    let currentStep = 'select';
-    let currentTakeIndex = 0;
+        <div id="cases" class="space-y-4">
+            <!-- Cases appear here -->
+        </div>
+    </div>
 
-    function render() {
-      const app = document.getElementById('app');
-      const actions = document.getElementById('actions');
-      const currentTake = ANIME_TAKES[currentTakeIndex];
-
-      if (currentStep === 'select') {
-        app.innerHTML = `
-          <h2>Pick your vibes:</h2>
-          <div>
-            ${VIBES.map(vibe => `
-              <button class="vibe-btn ${selectedVibes.includes(vibe)? 'active' : ''}"
-                onclick="toggleVibe('${vibe}')">${vibe}</button>
-            `).join('')}
-          </div>
-          <button onclick="showVerdict()">Get Verdict →</button>
-        `;
-        actions.innerHTML = '';
-      }
-
-      if (currentStep === 'verdict') {
-        app.innerHTML = `
-          <div class="card">
-            <h2>${currentTake.title}</h2>
-            <p><em>"${currentTake.text}"</em></p>
-            <p><strong>Your vibes:</strong> ${selectedVibes.join(', ')}</p>
-            <p style="color: #9ca3af; font-size: 14px;">Case ${currentTakeIndex + 1} of ${ANIME_TAKES.length}</p>
-          </div>
-        `;
-        actions.innerHTML = `
-          <button onclick="handleChoice('defend')">[Defend]</button>
-          <button onclick="handleChoice('prosecute')">[Prosecute]</button>
-          <button class="next-btn" onclick="nextCase()">Next Case →</button>
-          <button onclick="resetCourt()">← Change Vibes</button>
-        `;
-      }
-    }
-
-    function toggleVibe(vibe) {
-      if (selectedVibes.includes(vibe)) {
-        selectedVibes = selectedVibes.filter(v => v!== vibe);
-      } else {
-        selectedVibes.push(vibe);
-      }
-      render();
-    }
-
-    function showVerdict() {
-      if (selectedVibes.length === 0) {
-        alert('Pick at least one vibe first');
-        return;
-      }
-      currentStep = 'verdict';
-      render();
-    }
-
-    function handleChoice(choice) {
-      alert(`You chose to ${choice.toUpperCase()}: ${ANIME_TAKES[currentTakeIndex].title}`);
-    }
-
-    function nextCase() {
-      currentTakeIndex = (currentTakeIndex + 1) % ANIME_TAKES.length;
-      render();
-    }
-
-    function resetCourt() {
-      currentStep = 'select';
-      render();
-    }
-
-    render();
-  </script>
+    <script>
+        let cases = JSON.parse(localStorage.getItem('animeCases') || '[]');
+        
+        function renderCases() {
+            const container = document.getElementById('cases');
+            container.innerHTML = cases.map((c, i) => `
+                <div class="bg-gray-800 rounded-lg p-6 card">
+                    <h3 class="text-lg font-bold mb-2">${c.title}</h3>
+                    <p class="text-gray-300 mb-4">${c.desc}</p>
+                    <div class="flex gap-3">
+                        <button onclick="vote(${i}, 'guilty')" 
+                                class="flex-1 bg-red-600/20 hover:bg-red-600/40 rounded p-2">
+                            Guilty 👎 ${c.guilty || 0}
+                        </button>
+                        <button onclick="vote(${i}, 'innocent')" 
+                                class="flex-1 bg-green-600/20 hover:bg-green-600/40 rounded p-2">
+                            Innocent 👍 ${c.innocent || 0}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function addCase() {
+            const title = document.getElementById('caseTitle').value;
+            const desc = document.getElementById('caseDesc').value;
+            if (!title ||!desc) return;
+            
+            cases.unshift({ title, desc, guilty: 0, innocent: 0 });
+            localStorage.setItem('animeCases', JSON.stringify(cases));
+            document.getElementById('caseTitle').value = '';
+            document.getElementById('caseDesc').value = '';
+            renderCases();
+        }
+        
+        function vote(index, verdict) {
+            cases[index][verdict]++;
+            localStorage.setItem('animeCases', JSON.stringify(cases));
+            renderCases();
+        }
+        
+        // Starter case so it’s not empty
+        if (cases.length === 0) {
+            cases.push({
+                title: "Case: Is Naruto a better MC than Luffy?",
+                desc: "Anonymous plaintiff argues Naruto had better character development. Defense?",
+                guilty: 12,
+                innocent: 8
+            });
+        }
+        
+        renderCases();
+    </script>
 </body>
-  </html>
+</html>
