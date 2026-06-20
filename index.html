@@ -1,9 +1,9 @@
-            <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime Court ⚖️ Global</title>
+    <title>Anime Court ⚖️ v5.1 - Secure + Arguments</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; }
@@ -11,16 +11,22 @@
       .card:hover { transform: translateY(-2px); }
       .tab-active { background-color: rgb(147 51 234); }
       .live-dot { animation: pulse 2s infinite; }
-      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+      .vote-flash { animation: flash 0.3s ease; }
+        @keyframes flash { 0% { transform: scale(1.1); } 100% { transform: scale(1); } }
+      .banner { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-2xl">
+    <div class="banner text-center py-3 text-sm font-bold">
+        ⚖️ COURT IS IN SESSION - ARGUE YOUR CASE BELOW ⚖️
+    </div>
+    <div class="container mx-auto px-4 py-6 max-w-2xl">
         <header class="text-center mb-6">
-            <h1 class="text-4xl font-bold mb-2">⚖️ Anime Court</h1>
+            <h1 class="text-5xl font-black mb-2">ANIME COURT</h1>
             <p class="text-gray-400 flex items-center justify-center gap-2">
                 <span class="w-2 h-2 bg-green-500 rounded-full live-dot"></span>
-                Live Courtroom - Global
+                Live Global Courtroom v5.1 Secure
             </p>
         </header>
 
@@ -30,12 +36,12 @@
         </div>
 
         <div id="courtView">
-            <div class="bg-gray-800 rounded-lg p-6 mb-6 card">
+            <div class="bg-gray-800 rounded-lg p-6 mb-6 card border border-purple-500/30">
                 <h2 class="text-xl font-bold mb-4">File a New Case</h2>
-                <input id="caseTitle" type="text" placeholder="Case: Is One Piece too long?" 
-                       class="w-full bg-gray-700 rounded p-3 mb-3 outline-none">
-                <textarea id="caseDesc" placeholder="Your argument... Anonymous." 
-                          class="w-full bg-gray-700 rounded p-3 mb-3 h-24 outline-none"></textarea>
+                <input id="caseTitle" type="text" placeholder="Case: Is Eren a war criminal?"
+                       class="w-full bg-gray-700 rounded p-3 mb-3 outline-none focus:ring-2 focus:ring-purple-500" maxlength="100">
+                <textarea id="caseDesc" placeholder="Your opening argument... Anonymous."
+                          class="w-full bg-gray-700 rounded p-3 mb-3 h-24 outline-none focus:ring-2 focus:ring-purple-500" maxlength="500"></textarea>
                 <button onclick="addCase()" class="w-full bg-purple-600 hover:bg-purple-700 rounded p-3 font-bold">
                     Submit to Global Court
                 </button>
@@ -44,12 +50,12 @@
         </div>
 
         <div id="recView" class="hidden">
-            <div class="bg-gray-800 rounded-lg p-6 mb-6 card">
+            <div class="bg-gray-800 rounded-lg p-6 mb-6 card border border-blue-500/30">
                 <h2 class="text-xl font-bold mb-4">Request Anime Recs</h2>
-                <input id="recTitle" type="text" placeholder="I liked: AOT, Death Note, Vinland Saga" 
-                       class="w-full bg-gray-700 rounded p-3 mb-3 outline-none">
-                <textarea id="recDesc" placeholder="Want: Dark, psychological, no romance. Go." 
-                          class="w-full bg-gray-700 rounded p-3 mb-3 h-24 outline-none"></textarea>
+                <input id="recTitle" type="text" placeholder="I liked: AOT, Death Note, Vinland Saga"
+                       class="w-full bg-gray-700 rounded p-3 mb-3 outline-none focus:ring-2 focus:ring-blue-500" maxlength="100">
+                <textarea id="recDesc" placeholder="Want: Dark, psychological, no romance. Go."
+                          class="w-full bg-gray-700 rounded p-3 mb-3 h-24 outline-none focus:ring-2 focus:ring-blue-500" maxlength="500"></textarea>
                 <button onclick="addRecRequest()" class="w-full bg-blue-600 hover:bg-blue-700 rounded p-3 font-bold">
                     Ask The Global Jury
                 </button>
@@ -76,51 +82,97 @@
         const db = getDatabase(app);
         const casesRef = ref(db, 'cases');
         const recsRef = ref(db, 'recs');
-        
+
         let cases = [];
         let recs = [];
+        const votedCases = JSON.parse(localStorage.getItem('votedCases') || '{}');
+
+        // XSS Protection: Escape HTML
+        const escapeHTML = (str) => {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        };
 
         onValue(casesRef, (snapshot) => {
             const data = snapshot.val();
-            cases = data ? Object.entries(data).map(([id, val]) => ({id, ...val})).reverse() : [];
+            cases = data? Object.entries(data).map(([id, val]) => ({id,...val})).reverse() : [];
             renderCases();
         });
 
         onValue(recsRef, (snapshot) => {
             const data = snapshot.val();
-            recs = data ? Object.entries(data).map(([id, val]) => ({id, ...val})).reverse() : [];
+            recs = data? Object.entries(data).map(([id, val]) => ({id,...val})).reverse() : [];
             renderRecs();
         });
-        
+
         window.switchTab = (tab) => {
-            document.getElementById('courtView').classList.toggle('hidden', tab !== 'court');
-            document.getElementById('recView').classList.toggle('hidden', tab !== 'rec');
+            document.getElementById('courtView').classList.toggle('hidden', tab!== 'court');
+            document.getElementById('recView').classList.toggle('hidden', tab!== 'rec');
             document.getElementById('courtTab').classList.toggle('tab-active', tab === 'court');
             document.getElementById('recTab').classList.toggle('tab-active', tab === 'rec');
         }
-        
+
         function renderCases() {
             const container = document.getElementById('cases');
             if (cases.length === 0) {
                 container.innerHTML = '<p class="text-gray-500 text-center">No cases yet. File the first one!</p>';
                 return;
             }
-            container.innerHTML = cases.map((c) => `
-                <div class="bg-gray-800 rounded-lg p-6 card">
-                    <h3 class="text-lg font-bold mb-2">${c.title}</h3>
-                    <p class="text-gray-300 mb-4">${c.desc}</p>
-                    <div class="flex gap-3">
-                        <button onclick="vote('${c.id}', 'guilty')" class="flex-1 bg-red-600/20 hover:bg-red-600/40 rounded p-2">
+            container.innerHTML = cases.map((c) => {
+                const hasVoted = votedCases[c.id];
+                const totalVotes = (c.guilty || 0) + (c.innocent || 0);
+                const guiltyPct = totalVotes? Math.round((c.guilty || 0) / totalVotes * 100) : 0;
+                return `
+                <div class="bg-gray-800 rounded-lg p-6 card border border-gray-700">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-lg font-bold">${escapeHTML(c.title)}</h3>
+                        <span class="text-xs text-gray-500">${new Date(c.timestamp).toLocaleTimeString()}</span>
+                    </div>
+                    <p class="text-gray-300 mb-4">${escapeHTML(c.desc)}</p>
+
+                    <div class="bg-gray-900 rounded p-1 mb-3">
+                        <div class="flex text-xs mb-1">
+                            <span class="text-red-400">Guilty ${guiltyPct}%</span>
+                            <span class="ml-auto text-green-400">Innocent ${100-guiltyPct}%</span>
+                        </div>
+                        <div class="w-full bg-gray-700 rounded h-2">
+                            <div class="bg-red-600 h-2 rounded transition-all duration-300" style="width: ${guiltyPct}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 mb-4">
+                        <button onclick="vote('${c.id}', 'guilty')"
+                                class="flex-1 ${hasVoted? 'bg-gray-700 cursor-not-allowed' : 'bg-red-600/20 hover:bg-red-600/40'} rounded p-2"
+                                ${hasVoted? 'disabled' : ''}>
                             Guilty 👎 ${c.guilty || 0}
                         </button>
-                        <button onclick="vote('${c.id}', 'innocent')" class="flex-1 bg-green-600/20 hover:bg-green-600/40 rounded p-2">
+                        <button onclick="vote('${c.id}', 'innocent')"
+                                class="flex-1 ${hasVoted? 'bg-gray-700 cursor-not-allowed' : 'bg-green-600/20 hover:bg-green-600/40'} rounded p-2"
+                                ${hasVoted? 'disabled' : ''}>
                             Innocent 👍 ${c.innocent || 0}
                         </button>
                     </div>
+
+                    <div class="border-t border-gray-700 pt-3">
+                        <p class="text-sm font-bold mb-2 text-purple-400">${(c.arguments || []).length} Arguments Filed</p>
+                        <div class="bg-gray-700 rounded p-3 mb-3">
+                            <input id="arg-${c.id}" type="text" placeholder="Enter your argument..." maxlength="300"
+                                   class="w-full bg-gray-600 rounded p-2 mb-2 outline-none text-sm">
+                            <button onclick="addArgument('${c.id}')" class="text-xs bg-purple-600 hover:bg-purple-700 rounded px-3 py-1">Submit Argument</button>
+                        </div>
+                        <div class="space-y-2 max-h-40 overflow-y-auto">
+                            ${(c.arguments || []).map(arg => `
+                                <div class="bg-gray-700/50 rounded p-2 text-sm">
+                                    <span class="text-purple-400">Jury #${escapeHTML(arg.user.slice(-4))}:</span> ${escapeHTML(arg.text)}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
-        
+
         function renderRecs() {
             const container = document.getElementById('recs');
             if (recs.length === 0) {
@@ -128,58 +180,80 @@
                 return;
             }
             container.innerHTML = recs.map((r) => `
-                <div class="bg-gray-800 rounded-lg p-6 card">
-                    <h3 class="text-lg font-bold mb-2">Looking for: ${r.title}</h3>
-                    <p class="text-gray-300 mb-4">${r.desc}</p>
+                <div class="bg-gray-800 rounded-lg p-6 card border border-gray-700">
+                    <h3 class="text-lg font-bold mb-2">Looking for: ${escapeHTML(r.title)}</h3>
+                    <p class="text-gray-300 mb-4">${escapeHTML(r.desc)}</p>
                     <div class="bg-gray-700 rounded p-3 mb-3">
-                        <input id="recReply-${r.id}" type="text" placeholder="Drop a rec: Monster, Parasyte..." 
+                        <input id="recReply-${r.id}" type="text" placeholder="Drop a rec: Monster, Parasyte..." maxlength="200"
                                class="w-full bg-gray-600 rounded p-2 mb-2 outline-none text-sm">
                         <button onclick="addRecReply('${r.id}')" class="text-xs bg-blue-600 hover:bg-blue-700 rounded px-3 py-1">Reply</button>
                     </div>
                     <div class="space-y-2">
                         ${(r.replies || []).map(reply => `
                             <div class="bg-gray-700/50 rounded p-2 text-sm">
-                                <span class="text-blue-400">Anonymous Jury:</span> ${reply}
+                                <span class="text-blue-400">Anonymous Jury:</span> ${escapeHTML(reply)}
                             </div>
                         `).join('')}
                     </div>
                 </div>
             `).join('');
         }
-        
+
         window.addCase = () => {
-            const title = document.getElementById('caseTitle').value;
-            const desc = document.getElementById('caseDesc').value;
-            if (!title || !desc) return alert('Fill both fields, Judge');
-            push(casesRef, { title, desc, guilty: 0, innocent: 0, timestamp: Date.now() });
+            const title = document.getElementById('caseTitle').value.trim();
+            const desc = document.getElementById('caseDesc').value.trim();
+            if (!title ||!desc) return alert('Fill both fields, Judge');
+            if (title.length > 100 || desc.length > 500) return alert('Too long. Keep it court-room length.');
+            push(casesRef, { title, desc, guilty: 0, innocent: 0, arguments: [], timestamp: Date.now() });
             document.getElementById('caseTitle').value = '';
             document.getElementById('caseDesc').value = '';
         }
-        
+
         window.vote = (id, verdict) => {
+            if (votedCases[id]) return alert('You already voted on this case, Jury member.');
             const voteRef = ref(db, `cases/${id}/${verdict}`);
-            runTransaction(voteRef, (current) => (current || 0) + 1);
+            runTransaction(voteRef, (current) => (current || 0) + 1).then(() => {
+                votedCases[id] = true;
+                localStorage.setItem('votedCases', JSON.stringify(votedCases));
+            });
         }
-        
+
+        window.addArgument = (id) => {
+            const input = document.getElementById(`arg-${id}`);
+            const text = input.value.trim();
+            if (!text) return;
+            if (text.length > 300) return alert('Argument too long. 300 chars max.');
+            const argRef = ref(db, `cases/${id}/arguments`);
+            onValue(argRef, (snapshot) => {
+                const current = snapshot.val() || [];
+                const newArg = { text, user: crypto.randomUUID(), timestamp: Date.now() };
+                update(ref(db, `cases/${id}`), { arguments: [...current, newArg] });
+            }, { onlyOnce: true });
+            input.value = '';
+        }
+
         window.addRecRequest = () => {
-            const title = document.getElementById('recTitle').value;
-            const desc = document.getElementById('recDesc').value;
-            if (!title || !desc) return alert('Fill both fields, Judge');
+            const title = document.getElementById('recTitle').value.trim();
+            const desc = document.getElementById('recDesc').value.trim();
+            if (!title ||!desc) return alert('Fill both fields, Judge');
+            if (title.length > 100 || desc.length > 500) return alert('Too long. Keep it court-room length.');
             push(recsRef, { title, desc, replies: [], timestamp: Date.now() });
             document.getElementById('recTitle').value = '';
             document.getElementById('recDesc').value = '';
         }
-        
+
         window.addRecReply = (id) => {
             const input = document.getElementById(`recReply-${id}`);
-            if (!input.value) return;
+            const text = input.value.trim();
+            if (!text) return;
+            if (text.length > 200) return alert('Reply too long. 200 chars max.');
             const repliesRef = ref(db, `recs/${id}/replies`);
             onValue(repliesRef, (snapshot) => {
                 const current = snapshot.val() || [];
-                update(ref(db, `recs/${id}`), { replies: [...current, input.value] });
+                update(ref(db, `recs/${id}`), { replies: [...current, text] });
             }, { onlyOnce: true });
             input.value = '';
         }
     </script>
 </body>
-</html>
+            </html>
