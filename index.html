@@ -1,259 +1,282 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime Court ⚖️ v5.1 - Secure + Arguments</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; }
-      .card { transition: all 0.2s ease; }
-      .card:hover { transform: translateY(-2px); }
-      .tab-active { background-color: rgb(147 51 234); }
-      .live-dot { animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-      .vote-flash { animation: flash 0.3s ease; }
-        @keyframes flash { 0% { transform: scale(1.1); } 100% { transform: scale(1); } }
-      .banner { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anime Court v6.1 ⚖️</title>
+  <style>
+    * { margin: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: #0a0a0a; color: #e0e0e0; min-height: 100vh; }
+   .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 20px; border-bottom: 2px solid #00ff88; }
+   .logo { font-size: 28px; font-weight: bold; color: #00ff88; text-align: center; }
+   .subtitle { text-align: center; color: #888; font-size: 12px; margin-top: 5px; }
+   .user-bar { background: #111; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
+   .username-display { color: #00ff88; font-weight: bold; }
+   .username-input { background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; padding: 5px 10px; border-radius: 4px; }
+   .btn { background: #00ff88; color: #0a0a0a; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; }
+   .btn:hover { background: #00cc6a; }
+   .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+   .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #222; }
+   .tab { padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; }
+   .tab.active { color: #00ff88; border-bottom-color: #00ff88; }
+   .categories { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+   .category { padding: 5px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 20px; cursor: pointer; font-size: 12px; }
+   .category.active { background: #00ff88; color: #0a0a0a; border-color: #00ff88; }
+   .case-form { background: #111; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #222; }
+   .case-form input,.case-form textarea,.case-form select { width: 100%; background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+   .case-card { background: #111; padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #222; position: relative; }
+   .case-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+   .case-author { color: #00ff88; font-size: 12px; }
+   .case-category { background: #1a1a2e; color: #00ff88; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+   .case-title { font-size: 18px; margin-bottom: 8px; color: #fff; }
+   .case-desc { color: #aaa; margin-bottom: 15px; font-size: 14px; }
+   .vote-section { display: flex; gap: 10px; }
+   .vote-btn { flex: 1; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+   .vote-guilty { background: #ff4444; color: white; }
+   .vote-not-guilty { background: #44ff44; color: #0a0a0a; }
+   .vote-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+   .vote-count { text-align: center; margin-top: 5px; font-size: 12px; color: #666; }
+   .verdict { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; font-weight: bold; opacity: 0; pointer-events: none; }
+   .verdict.show { animation: verdictFade 0.3s ease-out forwards; }
+    @keyframes verdictFade { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1); } }
+   .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+   .stat-card { background: #111; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #222; }
+   .stat-number { font-size: 24px; color: #00ff88; font-weight: bold; }
+   .stat-label { font-size: 11px; color: #666; margin-top: 5px; }
+   .empty { text-align: center; color: #666; padding: 40px; }
+  </style>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen">
-    <div class="banner text-center py-3 text-sm font-bold">
-        ⚖️ COURT IS IN SESSION - ARGUE YOUR CASE BELOW ⚖️
+<body>
+  <div class="header">
+    <div class="logo">⚖️ ANIME COURT v6.1</div>
+    <div class="subtitle">The Chill Verdict System</div>
+  </div>
+
+  <div class="user-bar">
+    <div>Logged in as: <span class="username-display" id="usernameDisplay">@Anonymous</span></div>
+    <div>
+      <input type="text" class="username-input" id="usernameInput" placeholder="Set username" maxlength="15">
+      <button class="btn" onclick="setUsername()">Set</button>
     </div>
-    <div class="container mx-auto px-4 py-6 max-w-2xl">
-        <header class="text-center mb-6">
-            <h1 class="text-5xl font-black mb-2">ANIME COURT</h1>
-            <p class="text-gray-400 flex items-center justify-center gap-2">
-                <span class="w-2 h-2 bg-green-500 rounded-full live-dot"></span>
-                Live Global Courtroom v5.1 Secure
-            </p>
-        </header>
+  </div>
 
-        <div class="flex gap-2 mb-6">
-            <button id="courtTab" onclick="switchTab('court')" class="flex-1 bg-gray-800 rounded p-3 font-bold tab-active">Court Cases</button>
-            <button id="recTab" onclick="switchTab('rec')" class="flex-1 bg-gray-800 rounded p-3 font-bold">Need Recs</button>
-        </div>
-
-        <div id="courtView">
-            <div class="bg-gray-800 rounded-lg p-6 mb-6 card border border-purple-500/30">
-                <h2 class="text-xl font-bold mb-4">File a New Case</h2>
-                <input id="caseTitle" type="text" placeholder="Case: Is Eren a war criminal?"
-                       class="w-full bg-gray-700 rounded p-3 mb-3 outline-none focus:ring-2 focus:ring-purple-500" maxlength="100">
-                <textarea id="caseDesc" placeholder="Your opening argument... Anonymous."
-                          class="w-full bg-gray-700 rounded p-3 mb-3 h-24 outline-none focus:ring-2 focus:ring-purple-500" maxlength="500"></textarea>
-                <button onclick="addCase()" class="w-full bg-purple-600 hover:bg-purple-700 rounded p-3 font-bold">
-                    Submit to Global Court
-                </button>
-            </div>
-            <div id="cases" class="space-y-4"></div>
-        </div>
-
-        <div id="recView" class="hidden">
-            <div class="bg-gray-800 rounded-lg p-6 mb-6 card border border-blue-500/30">
-                <h2 class="text-xl font-bold mb-4">Request Anime Recs</h2>
-                <input id="recTitle" type="text" placeholder="I liked: AOT, Death Note, Vinland Saga"
-                       class="w-full bg-gray-700 rounded p-3 mb-3 outline-none focus:ring-2 focus:ring-blue-500" maxlength="100">
-                <textarea id="recDesc" placeholder="Want: Dark, psychological, no romance. Go."
-                          class="w-full bg-gray-700 rounded p-3 mb-3 h-24 outline-none focus:ring-2 focus:ring-blue-500" maxlength="500"></textarea>
-                <button onclick="addRecRequest()" class="w-full bg-blue-600 hover:bg-blue-700 rounded p-3 font-bold">
-                    Ask The Global Jury
-                </button>
-            </div>
-            <div id="recs" class="space-y-4"></div>
-        </div>
+  <div class="container">
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-number" id="totalCases">0</div>
+        <div class="stat-label">TOTAL CASES</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="totalVotes">0</div>
+        <div class="stat-label">TOTAL VOTES</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="activeUsers">1</div>
+        <div class="stat-label">JURORS ONLINE</div>
+      </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, push, onValue, runTransaction, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('courtroom')">Courtroom</div>
+      <div class="tab" onclick="switchTab('file')">File Case</div>
+    </div>
 
-        const firebaseConfig = {
-          apiKey: "AIzaSyCx11cXPbKVzO_bWCwCQVH6z_XkiAv2QCc",
-          authDomain: "anime---court-11a28.firebaseapp.com",
-          databaseURL: "https://anime---court-11a28-default-rtdb.firebaseio.com",
-          projectId: "anime---court-11a28",
-          storageBucket: "anime---court-11a28.firebasestorage.app",
-          messagingSenderId: "30113651354",
-          appId: "1:30113651354:web:38203b7ef5e971bebfdd23"
-        };
+    <div class="categories" id="categories">
+      <div class="category active" onclick="filterCategory('All')">[All]</div>
+      <div class="category" onclick="filterCategory('Hot Takes')">[Hot Takes]</div>
+      <div class="category" onclick="filterCategory('Power Scaling')">[Power Scaling]</div>
+      <div class="category" onclick="filterCategory('Waifu Wars')">[Waifu Wars]</div>
+      <div class="category" onclick="filterCategory('Animation')">[Animation]</div>
+      <div class="category" onclick="filterCategory('Plot Holes')">[Plot Holes]</div>
+    </div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const casesRef = ref(db, 'cases');
-        const recsRef = ref(db, 'recs');
+    <div id="courtroomView">
+      <div id="casesList"></div>
+    </div>
 
-        let cases = [];
-        let recs = [];
-        const votedCases = JSON.parse(localStorage.getItem('votedCases') || '{}');
+    <div id="fileView" style="display: none;">
+      <div class="case-form">
+        <h3 style="margin-bottom: 15px; color: #00ff88;">File New Case</h3>
+        <select id="caseCategory">
+          <option value="Hot Takes">Hot Takes</option>
+          <option value="Power Scaling">Power Scaling</option>
+          <option value="Waifu Wars">Waifu Wars</option>
+          <option value="Animation">Animation</option>
+          <option value="Plot Holes">Plot Holes</option>
+        </select>
+        <input type="text" id="caseTitle" placeholder="Case Title: e.g., 'Sakura is useless'" maxlength="100">
+        <textarea id="caseDesc" placeholder="Your argument... Keep it chill." rows="4" maxlength="500"></textarea>
+        <button class="btn" style="width: 100%;" onclick="fileCase()">Submit to Court</button>
+      </div>
+    </div>
+  </div>
 
-        // XSS Protection: Escape HTML
-        const escapeHTML = (str) => {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        };
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getDatabase, ref, push, onValue, set, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
-        onValue(casesRef, (snapshot) => {
-            const data = snapshot.val();
-            cases = data? Object.entries(data).map(([id, val]) => ({id,...val})).reverse() : [];
-            renderCases();
-        });
+    // TODO: PASTE YOUR FIREBASE CONFIG HERE FROM v5.1
+    const firebaseConfig = {
+      apiKey: "YOUR_KEY",
+      authDomain: "YOUR_DOMAIN",
+      projectId: "YOUR_PROJECT",
+      storageBucket: "YOUR_BUCKET",
+      messagingSenderId: "YOUR_SENDER",
+      appId: "YOUR_APP"
+    };
 
-        onValue(recsRef, (snapshot) => {
-            const data = snapshot.val();
-            recs = data? Object.entries(data).map(([id, val]) => ({id,...val})).reverse() : [];
-            renderRecs();
-        });
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const casesRef = ref(db, 'cases');
+    const usersRef = ref(db, 'users');
 
-        window.switchTab = (tab) => {
-            document.getElementById('courtView').classList.toggle('hidden', tab!== 'court');
-            document.getElementById('recView').classList.toggle('hidden', tab!== 'rec');
-            document.getElementById('courtTab').classList.toggle('tab-active', tab === 'court');
-            document.getElementById('recTab').classList.toggle('tab-active', tab === 'rec');
-        }
+    let currentUser = localStorage.getItem('courtUsername') || 'Anonymous';
+    let currentFilter = 'All';
+    let allCases = {};
+    let votedCases = JSON.parse(localStorage.getItem('votedCases') || '{}');
 
-        function renderCases() {
-            const container = document.getElementById('cases');
-            if (cases.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 text-center">No cases yet. File the first one!</p>';
-                return;
-            }
-            container.innerHTML = cases.map((c) => {
-                const hasVoted = votedCases[c.id];
-                const totalVotes = (c.guilty || 0) + (c.innocent || 0);
-                const guiltyPct = totalVotes? Math.round((c.guilty || 0) / totalVotes * 100) : 0;
-                return `
-                <div class="bg-gray-800 rounded-lg p-6 card border border-gray-700">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="text-lg font-bold">${escapeHTML(c.title)}</h3>
-                        <span class="text-xs text-gray-500">${new Date(c.timestamp).toLocaleTimeString()}</span>
-                    </div>
-                    <p class="text-gray-300 mb-4">${escapeHTML(c.desc)}</p>
+    document.getElementById('usernameDisplay').textContent = '@' + currentUser;
+    document.getElementById('usernameInput').value = currentUser === 'Anonymous'? '' : currentUser;
 
-                    <div class="bg-gray-900 rounded p-1 mb-3">
-                        <div class="flex text-xs mb-1">
-                            <span class="text-red-400">Guilty ${guiltyPct}%</span>
-                            <span class="ml-auto text-green-400">Innocent ${100-guiltyPct}%</span>
-                        </div>
-                        <div class="w-full bg-gray-700 rounded h-2">
-                            <div class="bg-red-600 h-2 rounded transition-all duration-300" style="width: ${guiltyPct}%"></div>
-                        </div>
-                    </div>
+    window.setUsername = () => {
+      const newName = document.getElementById('usernameInput').value.trim().replace(/[^a-zA-Z0-9_]/g, '');
+      if (newName.length < 3) return alert('Username must be 3+ characters');
+      currentUser = newName;
+      localStorage.setItem('courtUsername', newName);
+      document.getElementById('usernameDisplay').textContent = '@' + newName;
+      set(ref(db, 'users/' + newName), { lastSeen: Date.now() });
+    };
 
-                    <div class="flex gap-3 mb-4">
-                        <button onclick="vote('${c.id}', 'guilty')"
-                                class="flex-1 ${hasVoted? 'bg-gray-700 cursor-not-allowed' : 'bg-red-600/20 hover:bg-red-600/40'} rounded p-2"
-                                ${hasVoted? 'disabled' : ''}>
-                            Guilty 👎 ${c.guilty || 0}
-                        </button>
-                        <button onclick="vote('${c.id}', 'innocent')"
-                                class="flex-1 ${hasVoted? 'bg-gray-700 cursor-not-allowed' : 'bg-green-600/20 hover:bg-green-600/40'} rounded p-2"
-                                ${hasVoted? 'disabled' : ''}>
-                            Innocent 👍 ${c.innocent || 0}
-                        </button>
-                    </div>
+    window.switchTab = (tab) => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('courtroomView').style.display = tab === 'courtroom'? 'block' : 'none';
+      document.getElementById('fileView').style.display = tab === 'file'? 'block' : 'none';
+    };
 
-                    <div class="border-t border-gray-700 pt-3">
-                        <p class="text-sm font-bold mb-2 text-purple-400">${(c.arguments || []).length} Arguments Filed</p>
-                        <div class="bg-gray-700 rounded p-3 mb-3">
-                            <input id="arg-${c.id}" type="text" placeholder="Enter your argument..." maxlength="300"
-                                   class="w-full bg-gray-600 rounded p-2 mb-2 outline-none text-sm">
-                            <button onclick="addArgument('${c.id}')" class="text-xs bg-purple-600 hover:bg-purple-700 rounded px-3 py-1">Submit Argument</button>
-                        </div>
-                        <div class="space-y-2 max-h-40 overflow-y-auto">
-                            ${(c.arguments || []).map(arg => `
-                                <div class="bg-gray-700/50 rounded p-2 text-sm">
-                                    <span class="text-purple-400">Jury #${escapeHTML(arg.user.slice(-4))}:</span> ${escapeHTML(arg.text)}
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                </div>
-            `}).join('');
-        }
+    window.filterCategory = (cat) => {
+      currentFilter = cat;
+      document.querySelectorAll('.category').forEach(c => c.classList.remove('active'));
+      event.target.classList.add('active');
+      renderCases();
+    };
 
-        function renderRecs() {
-            const container = document.getElementById('recs');
-            if (recs.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 text-center">No requests yet. Ask for recs!</p>';
-                return;
-            }
-            container.innerHTML = recs.map((r) => `
-                <div class="bg-gray-800 rounded-lg p-6 card border border-gray-700">
-                    <h3 class="text-lg font-bold mb-2">Looking for: ${escapeHTML(r.title)}</h3>
-                    <p class="text-gray-300 mb-4">${escapeHTML(r.desc)}</p>
-                    <div class="bg-gray-700 rounded p-3 mb-3">
-                        <input id="recReply-${r.id}" type="text" placeholder="Drop a rec: Monster, Parasyte..." maxlength="200"
-                               class="w-full bg-gray-600 rounded p-2 mb-2 outline-none text-sm">
-                        <button onclick="addRecReply('${r.id}')" class="text-xs bg-blue-600 hover:bg-blue-700 rounded px-3 py-1">Reply</button>
-                    </div>
-                    <div class="space-y-2">
-                        ${(r.replies || []).map(reply => `
-                            <div class="bg-gray-700/50 rounded p-2 text-sm">
-                                <span class="text-blue-400">Anonymous Jury:</span> ${escapeHTML(reply)}
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `).join('');
-        }
+    window.fileCase = () => {
+      const title = document.getElementById('caseTitle').value.trim();
+      const desc = document.getElementById('caseDesc').value.trim();
+      const category = document.getElementById('caseCategory').value;
+      if (!title ||!desc) return alert('Fill all fields');
+      if (currentUser === 'Anonymous') return alert('Set a username first');
 
-        window.addCase = () => {
-            const title = document.getElementById('caseTitle').value.trim();
-            const desc = document.getElementById('caseDesc').value.trim();
-            if (!title ||!desc) return alert('Fill both fields, Judge');
-            if (title.length > 100 || desc.length > 500) return alert('Too long. Keep it court-room length.');
-            push(casesRef, { title, desc, guilty: 0, innocent: 0, arguments: [], timestamp: Date.now() });
-            document.getElementById('caseTitle').value = '';
-            document.getElementById('caseDesc').value = '';
-        }
+      push(casesRef, {
+        title,
+        desc,
+        category,
+        author: currentUser,
+        guiltyVotes: 0,
+        notGuiltyVotes: 0,
+        timestamp: Date.now()
+      });
 
-        window.vote = (id, verdict) => {
-            if (votedCases[id]) return alert('You already voted on this case, Jury member.');
-            const voteRef = ref(db, `cases/${id}/${verdict}`);
-            runTransaction(voteRef, (current) => (current || 0) + 1).then(() => {
-                votedCases[id] = true;
-                localStorage.setItem('votedCases', JSON.stringify(votedCases));
-            });
-        }
+      document.getElementById('caseTitle').value = '';
+      document.getElementById('caseDesc').value = '';
+      switchTab('courtroom');
+    };
 
-        window.addArgument = (id) => {
-            const input = document.getElementById(`arg-${id}`);
-            const text = input.value.trim();
-            if (!text) return;
-            if (text.length > 300) return alert('Argument too long. 300 chars max.');
-            const argRef = ref(db, `cases/${id}/arguments`);
-            onValue(argRef, (snapshot) => {
-                const current = snapshot.val() || [];
-                const newArg = { text, user: crypto.randomUUID(), timestamp: Date.now() };
-                update(ref(db, `cases/${id}`), { arguments: [...current, newArg] });
-            }, { onlyOnce: true });
-            input.value = '';
-        }
+    window.vote = (caseId, verdict) => {
+      if (votedCases[caseId]) return;
+      if (currentUser === 'Anonymous') return alert('Set a username first');
 
-        window.addRecRequest = () => {
-            const title = document.getElementById('recTitle').value.trim();
-            const desc = document.getElementById('recDesc').value.trim();
-            if (!title ||!desc) return alert('Fill both fields, Judge');
-            if (title.length > 100 || desc.length > 500) return alert('Too long. Keep it court-room length.');
-            push(recsRef, { title, desc, replies: [], timestamp: Date.now() });
-            document.getElementById('recTitle').value = '';
-            document.getElementById('recDesc').value = '';
-        }
+      const caseData = allCases[caseId];
+      const updates = {};
+      updates[`cases/${caseId}/${verdict}Votes`] = (caseData[verdict + 'Votes'] || 0) + 1;
 
-        window.addRecReply = (id) => {
-            const input = document.getElementById(`recReply-${id}`);
-            const text = input.value.trim();
-            if (!text) return;
-            if (text.length > 200) return alert('Reply too long. 200 chars max.');
-            const repliesRef = ref(db, `recs/${id}/replies`);
-            onValue(repliesRef, (snapshot) => {
-                const current = snapshot.val() || [];
-                update(ref(db, `recs/${id}`), { replies: [...current, text] });
-            }, { onlyOnce: true });
-            input.value = '';
-        }
-    </script>
+      update(ref(db), updates);
+      votedCases[caseId] = verdict;
+      localStorage.setItem('votedCases', JSON.stringify(votedCases));
+
+      showVerdict(caseId, verdict);
+      setTimeout(renderCases, 350);
+    };
+
+    function showVerdict(caseId, verdict) {
+      const card = document.querySelector(`[data-case="${caseId}"]`);
+      if (!card) return;
+      const verdictEl = card.querySelector('.verdict');
+      verdictEl.textContent = verdict === 'guilty'? 'GUILTY' : 'NOT GUILTY';
+      verdictEl.style.color = verdict === 'guilty'? '#ff4444' : '#44ff44';
+      verdictEl.classList.add('show');
+      setTimeout(() => verdictEl.classList.remove('show'), 300);
+    }
+
+    function renderCases() {
+      const casesList = document.getElementById('casesList');
+      const filtered = Object.entries(allCases).filter(([id, c]) =>
+        currentFilter === 'All' || c.category === currentFilter
+      ).sort((a, b) => b[1].timestamp - a[1].timestamp);
+
+      if (filtered.length === 0) {
+        casesList.innerHTML = '<div class="empty">No cases filed. Be the first.</div>';
+        return;
+      }
+
+      casesList.innerHTML = filtered.map(([id, c]) => {
+        const hasVoted = votedCases[id];
+        const totalVotes = (c.guiltyVotes || 0) + (c.notGuiltyVotes || 0);
+        return `
+          <div class="case-card" data-case="${id}">
+            <div class="verdict"></div>
+            <div class="case-header">
+              <span class="case-author">@${c.author}</span>
+              <span class="case-category">[${c.category}]</span>
+            </div>
+            <div class="case-title">${escapeHtml(c.title)}</div>
+            <div class="case-desc">${escapeHtml(c.desc)}</div>
+            <div class="vote-section">
+              <button class="vote-btn vote-guilty" onclick="vote('${id}', 'guilty')" ${hasVoted? 'disabled' : ''}>
+                GUILTY
+                <div class="vote-count">${c.guiltyVotes || 0}</div>
+              </button>
+              <button class="vote-btn vote-not-guilty" onclick="vote('${id}', 'notGuilty')" ${hasVoted? 'disabled' : ''}>
+                NOT GUILTY
+                <div class="vote-count">${c.notGuiltyVotes || 0}</div>
+              </button>
+            </div>
+            <div style="text-align: center; margin-top: 8px; font-size: 11px; color: #555;">
+              Total Votes: ${totalVotes}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    onValue(casesRef, (snapshot) => {
+      allCases = snapshot.val() || {};
+      renderCases();
+      document.getElementById('totalCases').textContent = Object.keys(allCases).length;
+      const totalVotes = Object.values(allCases).reduce((sum, c) =>
+        sum + (c.guiltyVotes || 0) + (c.notGuiltyVotes || 0), 0);
+      document.getElementById('totalVotes').textContent = totalVotes;
+    });
+
+    onValue(usersRef, (snapshot) => {
+      const users = snapshot.val() || {};
+      const now = Date.now();
+      const active = Object.values(users).filter(u => now - u.lastSeen < 300000).length;
+      document.getElementById('activeUsers').textContent = Math.max(1, active);
+    });
+
+    setInterval(() => {
+      if (currentUser!== 'Anonymous') {
+        set(ref(db, 'users/' + currentUser + '/lastSeen'), Date.now());
+      }
+    }, 60000);
+  </script>
 </body>
-            </html>
+              </html>
