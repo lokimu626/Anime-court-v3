@@ -7,43 +7,43 @@
   <style>
     * { margin: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
     body { background: #0a0a0a; color: #e0e0e0; min-height: 100vh; }
-   .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 20px; border-bottom: 2px solid #00ff88; }
-   .logo { font-size: 28px; font-weight: bold; color: #00ff88; text-align: center; }
-   .subtitle { text-align: center; color: #888; font-size: 12px; margin-top: 5px; }
-   .user-bar { background: #111; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
-   .username-display { color: #00ff88; font-weight: bold; }
-   .username-input { background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; padding: 5px 10px; border-radius: 4px; }
-   .btn { background: #00ff88; color: #0a0a0a; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; }
-   .btn:hover { background: #00cc6a; }
-   .container { max-width: 800px; margin: 0 auto; padding: 20px; }
-   .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #222; }
-   .tab { padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; }
-   .tab.active { color: #00ff88; border-bottom-color: #00ff88; }
-   .categories { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-   .category { padding: 5px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 20px; cursor: pointer; font-size: 12px; }
-   .category.active { background: #00ff88; color: #0a0a0a; border-color: #00ff88; }
-   .case-form { background: #111; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #222; }
-   .case-form input,.case-form textarea,.case-form select { width: 100%; background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
-   .case-card { background: #111; padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #222; position: relative; }
-   .case-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-   .case-author { color: #00ff88; font-size: 12px; }
-   .case-category { background: #1a1a2e; color: #00ff88; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
-   .case-title { font-size: 18px; margin-bottom: 8px; color: #fff; }
-   .case-desc { color: #aaa; margin-bottom: 15px; font-size: 14px; }
-   .vote-section { display: flex; gap: 10px; }
-   .vote-btn { flex: 1; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
-   .vote-guilty { background: #ff4444; color: white; }
-   .vote-not-guilty { background: #44ff44; color: #0a0a0a; }
-   .vote-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-   .vote-count { text-align: center; margin-top: 5px; font-size: 12px; color: #666; }
-   .verdict { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; font-weight: bold; opacity: 0; pointer-events: none; }
-   .verdict.show { animation: verdictFade 0.3s ease-out forwards; }
+  .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 20px; border-bottom: 2px solid #00ff88; }
+  .logo { font-size: 28px; font-weight: bold; color: #00ff88; text-align: center; }
+  .subtitle { text-align: center; color: #888; font-size: 12px; margin-top: 5px; }
+  .user-bar { background: #111; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
+  .username-display { color: #00ff88; font-weight: bold; }
+  .username-input { background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; padding: 5px 10px; border-radius: 4px; }
+  .btn { background: #00ff88; color: #0a0a0a; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; }
+  .btn:hover { background: #00cc6a; }
+  .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+  .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #222; }
+  .tab { padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; }
+  .tab.active { color: #00ff88; border-bottom-color: #00ff88; }
+  .categories { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .category { padding: 5px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 20px; cursor: pointer; font-size: 12px; }
+  .category.active { background: #00ff88; color: #0a0a0a; border-color: #00ff88; }
+  .case-form { background: #111; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #222; }
+  .case-form input,.case-form textarea,.case-form select { width: 100%; background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+  .case-card { background: #111; padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #222; position: relative; }
+  .case-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+  .case-author { color: #00ff88; font-size: 12px; }
+  .case-category { background: #1a1a2e; color: #00ff88; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+  .case-title { font-size: 18px; margin-bottom: 8px; color: #fff; }
+  .case-desc { color: #aaa; margin-bottom: 15px; font-size: 14px; }
+  .vote-section { display: flex; gap: 10px; }
+  .vote-btn { flex: 1; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+  .vote-guilty { background: #ff4444; color: white; }
+  .vote-not-guilty { background: #44ff44; color: #0a0a0a; }
+  .vote-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .vote-count { text-align: center; margin-top: 5px; font-size: 12px; color: #666; }
+  .verdict { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; font-weight: bold; opacity: 0; pointer-events: none; }
+  .verdict.show { animation: verdictFade 0.3s ease-out forwards; }
     @keyframes verdictFade { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1); } }
-   .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
-   .stat-card { background: #111; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #222; }
-   .stat-number { font-size: 24px; color: #00ff88; font-weight: bold; }
-   .stat-label { font-size: 11px; color: #666; margin-top: 5px; }
-   .empty { text-align: center; color: #666; padding: 40px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+  .stat-card { background: #111; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #222; }
+  .stat-number { font-size: 24px; color: #00ff88; font-weight: bold; }
+  .stat-label { font-size: 11px; color: #666; margin-top: 5px; }
+  .empty { text-align: center; color: #666; padding: 40px; }
   </style>
 </head>
 <body>
@@ -115,14 +115,14 @@
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
     import { getDatabase, ref, push, onValue, set, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
-    // TODO: PASTE YOUR FIREBASE CONFIG HERE FROM v5.1
     const firebaseConfig = {
-      apiKey: "YOUR_KEY",
-      authDomain: "YOUR_DOMAIN",
-      projectId: "YOUR_PROJECT",
-      storageBucket: "YOUR_BUCKET",
-      messagingSenderId: "YOUR_SENDER",
-      appId: "YOUR_APP"
+      apiKey: "AIzaSyCx11cXPbKVzO_bWCwCQVH6z_XkiAv2QCc",
+      authDomain: "anime---court-11a28.firebaseapp.com",
+      databaseURL: "https://anime---court-11a28-default-rtdb.firebaseio.com",
+      projectId: "anime---court-11a28",
+      storageBucket: "anime---court-11a28.firebasestorage.app",
+      messagingSenderId: "30113651354",
+      appId: "1:30113651354:web:38203b7ef5e971bebfdd23"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -279,4 +279,4 @@
     }, 60000);
   </script>
 </body>
-              </html>
+  </html>
