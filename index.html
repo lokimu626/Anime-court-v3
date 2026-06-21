@@ -123,219 +123,284 @@
   </div>
 
   <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-    import { getDatabase, ref, push, onValue, set, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+  import { getDatabase, ref, push, onValue, set, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCx11cXPbKVzO_bWCwCQVH6z_XkiAv2QCc",
-      authDomain: "anime---court-11a28.firebaseapp.com",
-      databaseURL: "https://anime---court-11a28-default-rtdb.firebaseio.com",
-      projectId: "anime---court-11a28",
-      storageBucket: "anime---court-11a28.firebasestorage.app",
-      messagingSenderId: "30113651354",
-      appId: "1:30113651354:web:38203b7ef5e971bebfdd23"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyCx11cXPbKVzO_bWCwCQVH6z_XkiAv2QCc",
+    authDomain: "anime---court-11a28.firebaseapp.com",
+    databaseURL: "https://anime---court-11a28-default-rtdb.firebaseio.com",
+    projectId: "anime---court-11a28",
+    storageBucket: "anime---court-11a28.firebasestorage.app",
+    messagingSenderId: "30113651354",
+    appId: "1:30113651354:web:38203b7ef5e971bebfdd23"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const casesRef = ref(db, 'cases');
-    const usersRef = ref(db, 'users');
-    const recsRef = ref(db, 'recommendations');
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const casesRef = ref(db, 'cases');
+  const usersRef = ref(db, 'users');
+  const recsRef = ref(db, 'recommendations');
+  const commentsRef = ref(db, 'comments');
 
-    let currentUser = localStorage.getItem('courtUsername') || 'Anonymous';
-    let currentFilter = 'All';
-    let allCases = {};
-    let allRecs = {};
-    let votedCases = JSON.parse(localStorage.getItem('votedCases') || '{}');
+  let currentUser = localStorage.getItem('courtUsername') || 'Anonymous';
+  let currentFilter = 'All';
+  let allCases = {};
+  let allRecs = {};
+  let allComments = {};
+  let votedCases = JSON.parse(localStorage.getItem('votedCases') || '{}');
 
-    document.getElementById('usernameDisplay').textContent = '@' + currentUser;
-    document.getElementById('usernameInput').value = currentUser === 'Anonymous'? '' : currentUser;
+  document.getElementById('usernameDisplay').textContent = '@' + currentUser;
+  document.getElementById('usernameInput').value = currentUser === 'Anonymous'? '' : currentUser;
 
-    window.setUsername = () => {
-      const newName = document.getElementById('usernameInput').value.trim().replace(/[^a-zA-Z0-9_]/g, '');
-      if (newName.length < 3) return alert('Username must be 3+ characters');
-      currentUser = newName;
-      localStorage.setItem('courtUsername', newName);
-      document.getElementById('usernameDisplay').textContent = '@' + newName;
-      set(ref(db, 'users/' + newName), { lastSeen: Date.now() });
-    };
+  window.setUsername = () => {
+    const newName = document.getElementById('usernameInput').value.trim().replace(/[^a-zA-Z0-9_]/g, '');
+    if (newName.length < 3) return alert('Username must be 3+ characters');
+    currentUser = newName;
+    localStorage.setItem('courtUsername', newName);
+    document.getElementById('usernameDisplay').textContent = '@' + newName;
+    set(ref(db, 'users/' + newName), { lastSeen: Date.now() });
+  };
 
-    window.switchTab = (tab) => {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      event.target.classList.add('active');
-      document.getElementById('courtroomView').style.display = tab === 'courtroom'? 'block' : 'none';
-      document.getElementById('fileView').style.display = tab === 'file'? 'block' : 'none';
-      document.getElementById('recsView').style.display = tab === 'recs'? 'block' : 'none';
-    };
+  window.switchTab = (tab) => {
+    document.querySelectorAll('[id$="Tab"]').forEach(t => {
+      t.classList.remove('text-teal-400', 'border-teal-400');
+      t.classList.add('text-gray-500');
+    });
+    document.getElementById(tab + 'Tab').classList.add('text-teal-400', 'border-b-2', 'border-teal-400');
+    document.getElementById(tab + 'Tab').classList.remove('text-gray-500');
 
-    window.filterCategory = (cat) => {
-      currentFilter = cat;
-      document.querySelectorAll('.category').forEach(c => c.classList.remove('active'));
-      event.target.classList.add('active');
-      renderCases();
-    };
+    document.getElementById('courtroomView').classList.toggle('hidden', tab!== 'courtroom');
+    document.getElementById('fileView').classList.toggle('hidden', tab!== 'file');
+    document.getElementById('recsView').classList.toggle('hidden', tab!== 'recs');
+  };
 
-    window.fileCase = () => {
-      const title = document.getElementById('caseTitle').value.trim();
-      const desc = document.getElementById('caseDesc').value.trim();
-      const category = document.getElementById('caseCategory').value;
-      if (!title ||!desc) return alert('Fill all fields');
-      if (currentUser === 'Anonymous') return alert('Set a username first');
+  window.filterCategory = (cat) => {
+    currentFilter = cat;
+    document.querySelectorAll('.category-btn').forEach(c => {
+      c.classList.remove('bg-teal-500', 'text-black');
+      c.classList.add('glass');
+    });
+    event.target.classList.add('bg-teal-500', 'text-black');
+    event.target.classList.remove('glass');
+    renderCases();
+  };
 
-      push(casesRef, {
-        title,
-        desc,
-        category,
-        author: currentUser,
-        guiltyVotes: 0,
-        notGuiltyVotes: 0,
-        timestamp: Date.now()
-      });
+  window.fileCase = () => {
+    const title = document.getElementById('caseTitle').value.trim();
+    const desc = document.getElementById('caseDesc').value.trim();
+    const category = document.getElementById('caseCategory').value;
+    if (!title ||!desc) return alert('Fill all fields');
+    if (currentUser === 'Anonymous') return alert('Set a username first');
 
-      document.getElementById('caseTitle').value = '';
-      document.getElementById('caseDesc').value = '';
-      switchTab('courtroom');
-    };
+    push(casesRef, {
+      title, desc, category,
+      author: currentUser,
+      guiltyVotes: 0, notGuiltyVotes: 0,
+      timestamp: Date.now()
+    });
 
-    window.fileRec = () => {
-      const title = document.getElementById('recTitle').value.trim();
-      const desc = document.getElementById('recDesc').value.trim();
-      if (!title ||!desc) return alert('Fill all fields');
-      if (currentUser === 'Anonymous') return alert('Set a username first');
+    document.getElementById('caseTitle').value = '';
+    document.getElementById('caseDesc').value = '';
+    switchTab('courtroom');
+  };
 
-      push(recsRef, {
-        title,
-        desc,
-        author: currentUser,
-        timestamp: Date.now()
-      });
+  window.fileRec = () => {
+    const title = document.getElementById('recTitle').value.trim();
+    const desc = document.getElementById('recDesc').value.trim();
+    if (!title ||!desc) return alert('Fill all fields');
+    if (currentUser === 'Anonymous') return alert('Set a username first');
 
-      document.getElementById('recTitle').value = '';
-      document.getElementById('recDesc').value = '';
-    };
+    push(recsRef, { title, desc, author: currentUser, timestamp: Date.now() });
+    document.getElementById('recTitle').value = '';
+    document.getElementById('recDesc').value = '';
+  };
 
-    window.vote = (caseId, verdict) => {
-      if (votedCases[caseId]) return;
-      if (currentUser === 'Anonymous') return alert('Set a username first');
+  window.vote = (caseId, verdict) => {
+    if (votedCases[caseId]) return;
+    if (currentUser === 'Anonymous') return alert('Set a username first');
 
-      const caseData = allCases[caseId];
-      const updates = {};
-      updates[`cases/${caseId}/${verdict}Votes`] = (caseData[verdict + 'Votes'] || 0) + 1;
+    const caseData = allCases[caseId];
+    const updates = {};
+    updates[`cases/${caseId}/${verdict}Votes`] = (caseData[verdict + 'Votes'] || 0) + 1;
 
-      update(ref(db), updates);
-      votedCases[caseId] = verdict;
-      localStorage.setItem('votedCases', JSON.stringify(votedCases));
+    update(ref(db), updates);
+    votedCases[caseId] = verdict;
+    localStorage.setItem('votedCases', JSON.stringify(votedCases));
 
-      showVerdict(caseId, verdict);
-      setTimeout(renderCases, 350);
-    };
+    showVerdict(caseId, verdict);
+    setTimeout(renderCases, 350);
+  };
 
-    function showVerdict(caseId, verdict) {
-      const card = document.querySelector(`[data-case="${caseId}"]`);
-      if (!card) return;
-      const verdictEl = card.querySelector('.verdict');
-      verdictEl.textContent = verdict === 'guilty'? 'GUILTY' : 'NOT GUILTY';
-      verdictEl.style.color = verdict === 'guilty'? '#ff4444' : '#44ff44';
-      verdictEl.classList.add('show');
-      setTimeout(() => verdictEl.classList.remove('show'), 300);
+  window.postComment = (caseId) => {
+    if (currentUser === 'Anonymous') return alert('Set a username first');
+    const input = document.getElementById(`comment-input-${caseId}`);
+    const text = input.value.trim();
+    if (!text) return;
+    if (text.length > 300) return alert('Keep arguments under 300 chars');
+
+    push(ref(db, `comments/${caseId}`), {
+      text,
+      author: currentUser,
+      timestamp: Date.now()
+    });
+    input.value = '';
+  };
+
+  window.toggleComments = (caseId) => {
+    document.getElementById(`comments-${caseId}`).classList.toggle('hidden');
+  };
+
+  function showVerdict(caseId, verdict) {
+    const card = document.querySelector(`[data-case="${caseId}"]`);
+    if (!card) return;
+    const verdictEl = document.createElement('div');
+    verdictEl.className = 'verdict-flash absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-extrabold pointer-events-none';
+    verdictEl.textContent = verdict === 'guilty'? 'GUILTY' : 'NOT GUILTY';
+    verdictEl.style.color = verdict === 'guilty'? '#ef4444' : '#22c55e';
+    card.appendChild(verdictEl);
+    setTimeout(() => verdictEl.remove(), 300);
+  }
+
+  function renderCases() {
+    const casesList = document.getElementById('casesList');
+    const filtered = Object.entries(allCases).filter(([id, c]) =>
+      currentFilter === 'All' || c.category === currentFilter
+    ).sort((a, b) => b[1].timestamp - a[1].timestamp);
+
+    if (filtered.length === 0) {
+      casesList.innerHTML = '<div class="text-center text-gray-500 py-12">No cases filed. Be the first.</div>';
+      return;
     }
 
-    function renderCases() {
-      const casesList = document.getElementById('casesList');
-      const filtered = Object.entries(allCases).filter(([id, c]) =>
-        currentFilter === 'All' || c.category === currentFilter
-      ).sort((a, b) => b[1].timestamp - a[1].timestamp);
+    casesList.innerHTML = filtered.map(([id, c]) => {
+      const hasVoted = votedCases[id];
+      const author = c.author || 'Anonymous';
+      const category = c.category || 'Hot Takes';
+      const gVotes = c.guiltyVotes || 0;
+      const ngVotes = c.notGuiltyVotes || 0;
+      const caseComments = allComments[id] ? Object.entries(allComments[id]).sort((a,b) => a[1].timestamp - b[1].timestamp) : [];
+      const commentCount = caseComments.length;
 
-      if (filtered.length === 0) {
-        casesList.innerHTML = '<div class="empty">No cases filed. Be the first.</div>';
-        return;
-      }
-
-      casesList.innerHTML = filtered.map(([id, c]) => {
-        const hasVoted = votedCases[id];
-        const totalVotes = (c.guiltyVotes || 0) + (c.notGuiltyVotes || 0);
-        const author = c.author || 'Anonymous'; // Fallback for old v5.1 cases
-        const category = c.category || 'Hot Takes'; // Fallback for old v5.1 cases
-        return `
-          <div class="case-card" data-case="${id}">
-            <div class="verdict"></div>
-            <div class="case-header">
-              <span class="case-author">@${author}</span>
-              <span class="case-category">[${category}]</span>
-            </div>
-            <div class="case-title">${escapeHtml(c.title)}</div>
-            <div class="case-desc">${escapeHtml(c.desc)}</div>
-            <div class="vote-section">
-              <button class="vote-btn vote-guilty" onclick="vote('${id}', 'guilty')" ${hasVoted? 'disabled' : ''}>
-                GUILTY
-                <div class="vote-count">${c.guiltyVotes || 0}</div>
-              </button>
-              <button class="vote-btn vote-not-guilty" onclick="vote('${id}', 'notGuilty')" ${hasVoted? 'disabled' : ''}>
-                NOT GUILTY
-                <div class="vote-count">${c.notGuiltyVotes || 0}</div>
-              </button>
-            </div>
-            <div style="text-align: center; margin-top: 8px; font-size: 11px; color: #555;">
-              Total Votes: ${totalVotes}
+      return `
+        <div class="glass rounded-2xl p-6 mb-4 relative" data-case="${id}">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <span class="text-teal-400 text-sm font-semibold">@${author}</span>
+              <span class="ml-2 text-xs bg-black/30 px-2 py-1 rounded">${category}</span>
             </div>
           </div>
-        `;
-      }).join('');
-    }
-
-    function renderRecs() {
-      const recsList = document.getElementById('recsList');
-      const sorted = Object.entries(allRecs).sort((a, b) => b[1].timestamp - a[1].timestamp);
-
-      if (sorted.length === 0) {
-        recsList.innerHTML = '<div class="empty">No recommendations yet. Drop some heat.</div>';
-        return;
-      }
-
-      recsList.innerHTML = sorted.map(([id, r]) => `
-        <div class="case-card">
-          <div class="case-header">
-            <span class="case-author">@${r.author || 'Anonymous'}</span>
-            <span class="case-category">[Recommendation]</span>
+          <h3 class="text-xl font-bold mb-2">${escapeHtml(c.title)}</h3>
+          <p class="text-gray-400 text-sm mb-5">${escapeHtml(c.desc)}</p>
+          <div class="grid grid-cols-2 gap-3 mb-4">
+            <button onclick="vote('${id}', 'guilty')" ${hasVoted? 'disabled' : ''}
+                    class="bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-400 font-bold py-3 rounded-xl transition disabled:opacity-30 disabled:cursor-not-allowed">
+              GUILTY ${gVotes}
+            </button>
+            <button onclick="vote('${id}', 'notGuilty')" ${hasVoted? 'disabled' : ''}
+                    class="bg-green-500/20 hover:bg-green-500/30 border border-green-500/50 text-green-400 font-bold py-3 rounded-xl transition disabled:opacity-30 disabled:cursor-not-allowed">
+              NOT GUILTY ${ngVotes}
+            </button>
           </div>
-          <div class="case-title">${escapeHtml(r.title)}</div>
-          <div class="case-desc">${escapeHtml(r.desc)}</div>
+          
+          <button onclick="toggleComments('${id}')" class="w-full text-left text-sm text-teal-400/70 hover:text-teal-400 mb-3">
+            Arguments (${commentCount}) ▼
+          </button>
+          
+          <div id="comments-${id}" class="hidden">
+            <div class="space-y-3 mb-4 max-h-60 overflow-y-auto">
+              ${caseComments.map(([cid, com]) => `
+                <div class="bg-black/20 rounded-lg p-3">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="text-teal-400 text-xs font-semibold">@${com.author}</span>
+                    <span class="text-gray-500 text-xs">${timeAgo(com.timestamp)}</span>
+                  </div>
+                  <p class="text-sm text-gray-300">${escapeHtml(com.text)}</p>
+                </div>
+              `).join('') || '<div class="text-gray-500 text-sm text-center py-4">No arguments yet. Drop the first take.</div>'}
+            </div>
+            <div class="flex gap-2">
+              <input type="text" id="comment-input-${id}" placeholder="Drop your argument..." maxlength="300"
+                     class="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
+              <button onclick="postComment('${id}')" class="bg-teal-500 hover:bg-teal-400 text-black font-bold px-4 rounded-lg text-sm">
+                Post
+              </button>
+            </div>
+          </div>
         </div>
-      `).join('');
+      `;
+    }).join('');
+  }
+
+  function renderRecs() {
+    const recsList = document.getElementById('recsList');
+    const sorted = Object.entries(allRecs).sort((a, b) => b[1].timestamp - a[1].timestamp);
+
+    if (sorted.length === 0) {
+      recsList.innerHTML = '<div class="text-center text-gray-500 py-12">No recommendations yet. Drop some heat.</div>';
+      return;
     }
 
-    function escapeHtml(str) {
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
+    recsList.innerHTML = sorted.map(([id, r]) => `
+      <div class="glass rounded-2xl p-6 mb-4">
+        <div class="flex justify-between items-start mb-3">
+          <span class="text-teal-400 text-sm font-semibold">@${r.author || 'Anonymous'}</span>
+          <span class="text-xs bg-black/30 px-2 py-1 rounded">Recommendation</span>
+        </div>
+        <h3 class="text-xl font-bold mb-2">${escapeHtml(r.title)}</h3>
+        <p class="text-gray-400 text-sm">${escapeHtml(r.desc)}</p>
+      </div>
+    `).join('');
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function timeAgo(timestamp) {
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    if (seconds < 60) return `${seconds}s ago`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+  }
+
+  onValue(casesRef, (snapshot) => {
+    allCases = snapshot.val() || {};
+    renderCases();
+    document.getElementById('totalCases').textContent = Object.keys(allCases).length.toString().padStart(2, '0');
+    const totalVotes = Object.values(allCases).reduce((sum, c) => sum + (c.guiltyVotes || 0) + (c.notGuiltyVotes || 0), 0);
+    document.getElementById('totalVotes').textContent = totalVotes.toString().padStart(2, '0');
+  });
+
+  onValue(commentsRef, (snapshot) => {
+    allComments = snapshot.val() || {};
+    renderCases();
+  });
+
+  onValue(recsRef, (snapshot) => {
+    allRecs = snapshot.val() || {};
+    renderRecs();
+  });
+
+  onValue(usersRef, (snapshot) => {
+    const users = snapshot.val() || {};
+    const now = Date.now();
+    const active = Object.values(users).filter(u => now - u.lastSeen < 300000).length;
+    document.getElementById('activeUsers').textContent = Math.max(1, active).toString().padStart(2, '0');
+  });
+
+  setInterval(() => {
+    if (currentUser!== 'Anonymous') {
+      set(ref(db, 'users/' + currentUser + '/lastSeen'), Date.now());
     }
-
-    onValue(casesRef, (snapshot) => {
-      allCases = snapshot.val() || {};
-      renderCases();
-      document.getElementById('totalCases').textContent = Object.keys(allCases).length;
-      const totalVotes = Object.values(allCases).reduce((sum, c) =>
-        sum + (c.guiltyVotes || 0) + (c.notGuiltyVotes || 0), 0);
-      document.getElementById('totalVotes').textContent = totalVotes;
-    });
-
-    onValue(recsRef, (snapshot) => {
-      allRecs = snapshot.val() || {};
-      renderRecs();
-    });
-
-    onValue(usersRef, (snapshot) => {
-      const users = snapshot.val() || {};
-      const now = Date.now();
-      const active = Object.values(users).filter(u => now - u.lastSeen < 300000).length;
-      document.getElementById('activeUsers').textContent = Math.max(1, active);
-    });
-
-    setInterval(() => {
-      if (currentUser!== 'Anonymous') {
-        set(ref(db, 'users/' + currentUser + '/lastSeen'), Date.now());
-      }
-    }, 60000);
-  </script>
+  }, 60000);
+          </script>
+    
 </body>
           </html>
