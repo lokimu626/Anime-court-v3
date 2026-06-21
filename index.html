@@ -7,43 +7,43 @@
   <style>
     * { margin: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
     body { background: #0a0a0a; color: #e0e0e0; min-height: 100vh; }
-  .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 20px; border-bottom: 2px solid #00ff88; }
-  .logo { font-size: 28px; font-weight: bold; color: #00ff88; text-align: center; }
-  .subtitle { text-align: center; color: #888; font-size: 12px; margin-top: 5px; }
-  .user-bar { background: #111; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
-  .username-display { color: #00ff88; font-weight: bold; }
-  .username-input { background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; padding: 5px 10px; border-radius: 4px; }
-  .btn { background: #00ff88; color: #0a0a0a; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; }
-  .btn:hover { background: #00cc6a; }
-  .container { max-width: 800px; margin: 0 auto; padding: 20px; }
-  .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #222; }
-  .tab { padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; }
-  .tab.active { color: #00ff88; border-bottom-color: #00ff88; }
-  .categories { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-  .category { padding: 5px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 20px; cursor: pointer; font-size: 12px; }
-  .category.active { background: #00ff88; color: #0a0a0a; border-color: #00ff88; }
-  .case-form { background: #111; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #222; }
-  .case-form input,.case-form textarea,.case-form select { width: 100%; background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
-  .case-card { background: #111; padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #222; position: relative; }
-  .case-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-  .case-author { color: #00ff88; font-size: 12px; }
-  .case-category { background: #1a1a2e; color: #00ff88; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
-  .case-title { font-size: 18px; margin-bottom: 8px; color: #fff; }
-  .case-desc { color: #aaa; margin-bottom: 15px; font-size: 14px; }
-  .vote-section { display: flex; gap: 10px; }
-  .vote-btn { flex: 1; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
-  .vote-guilty { background: #ff4444; color: white; }
-  .vote-not-guilty { background: #44ff44; color: #0a0a0a; }
-  .vote-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-  .vote-count { text-align: center; margin-top: 5px; font-size: 12px; color: #666; }
-  .verdict { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; font-weight: bold; opacity: 0; pointer-events: none; }
-  .verdict.show { animation: verdictFade 0.3s ease-out forwards; }
+   .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 20px; border-bottom: 2px solid #00ff88; }
+   .logo { font-size: 28px; font-weight: bold; color: #00ff88; text-align: center; }
+   .subtitle { text-align: center; color: #888; font-size: 12px; margin-top: 5px; }
+   .user-bar { background: #111; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
+   .username-display { color: #00ff88; font-weight: bold; }
+   .username-input { background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; padding: 5px 10px; border-radius: 4px; }
+   .btn { background: #00ff88; color: #0a0a0a; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; }
+   .btn:hover { background: #00cc6a; }
+   .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+   .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #222; flex-wrap: wrap; }
+   .tab { padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; }
+   .tab.active { color: #00ff88; border-bottom-color: #00ff88; }
+   .categories { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+   .category { padding: 5px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 20px; cursor: pointer; font-size: 12px; }
+   .category.active { background: #00ff88; color: #0a0a0a; border-color: #00ff88; }
+   .case-form { background: #111; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #222; }
+   .case-form input,.case-form textarea,.case-form select { width: 100%; background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+   .case-card { background: #111; padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #222; position: relative; }
+   .case-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+   .case-author { color: #00ff88; font-size: 12px; }
+   .case-category { background: #1a1a2e; color: #00ff88; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+   .case-title { font-size: 18px; margin-bottom: 8px; color: #fff; }
+   .case-desc { color: #aaa; margin-bottom: 15px; font-size: 14px; }
+   .vote-section { display: flex; gap: 10px; }
+   .vote-btn { flex: 1; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+   .vote-guilty { background: #ff4444; color: white; }
+   .vote-not-guilty { background: #44ff44; color: #0a0a0a; }
+   .vote-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+   .vote-count { text-align: center; margin-top: 5px; font-size: 12px; color: #666; }
+   .verdict { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; font-weight: bold; opacity: 0; pointer-events: none; }
+   .verdict.show { animation: verdictFade 0.3s ease-out forwards; }
     @keyframes verdictFade { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1); } }
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
-  .stat-card { background: #111; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #222; }
-  .stat-number { font-size: 24px; color: #00ff88; font-weight: bold; }
-  .stat-label { font-size: 11px; color: #666; margin-top: 5px; }
-  .empty { text-align: center; color: #666; padding: 40px; }
+   .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+   .stat-card { background: #111; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #222; }
+   .stat-number { font-size: 24px; color: #00ff88; font-weight: bold; }
+   .stat-label { font-size: 11px; color: #666; margin-top: 5px; }
+   .empty { text-align: center; color: #666; padding: 40px; }
   </style>
 </head>
 <body>
@@ -79,6 +79,7 @@
     <div class="tabs">
       <div class="tab active" onclick="switchTab('courtroom')">Courtroom</div>
       <div class="tab" onclick="switchTab('file')">File Case</div>
+      <div class="tab" onclick="switchTab('recs')">Recommendations</div>
     </div>
 
     <div class="categories" id="categories">
@@ -109,6 +110,16 @@
         <button class="btn" style="width: 100%;" onclick="fileCase()">Submit to Court</button>
       </div>
     </div>
+
+    <div id="recsView" style="display: none;">
+      <div class="case-form">
+        <h3 style="margin-bottom: 15px; color: #00ff88;">Recommend Anime</h3>
+        <input type="text" id="recTitle" placeholder="Anime Title" maxlength="100">
+        <textarea id="recDesc" placeholder="Why should we watch it? Keep it chill." rows="4" maxlength="500"></textarea>
+        <button class="btn" style="width: 100%;" onclick="fileRec()">Post Recommendation</button>
+      </div>
+      <div id="recsList"></div>
+    </div>
   </div>
 
   <script type="module">
@@ -129,10 +140,12 @@
     const db = getDatabase(app);
     const casesRef = ref(db, 'cases');
     const usersRef = ref(db, 'users');
+    const recsRef = ref(db, 'recommendations');
 
     let currentUser = localStorage.getItem('courtUsername') || 'Anonymous';
     let currentFilter = 'All';
     let allCases = {};
+    let allRecs = {};
     let votedCases = JSON.parse(localStorage.getItem('votedCases') || '{}');
 
     document.getElementById('usernameDisplay').textContent = '@' + currentUser;
@@ -152,6 +165,7 @@
       event.target.classList.add('active');
       document.getElementById('courtroomView').style.display = tab === 'courtroom'? 'block' : 'none';
       document.getElementById('fileView').style.display = tab === 'file'? 'block' : 'none';
+      document.getElementById('recsView').style.display = tab === 'recs'? 'block' : 'none';
     };
 
     window.filterCategory = (cat) => {
@@ -181,6 +195,23 @@
       document.getElementById('caseTitle').value = '';
       document.getElementById('caseDesc').value = '';
       switchTab('courtroom');
+    };
+
+    window.fileRec = () => {
+      const title = document.getElementById('recTitle').value.trim();
+      const desc = document.getElementById('recDesc').value.trim();
+      if (!title ||!desc) return alert('Fill all fields');
+      if (currentUser === 'Anonymous') return alert('Set a username first');
+
+      push(recsRef, {
+        title,
+        desc,
+        author: currentUser,
+        timestamp: Date.now()
+      });
+
+      document.getElementById('recTitle').value = '';
+      document.getElementById('recDesc').value = '';
     };
 
     window.vote = (caseId, verdict) => {
@@ -223,12 +254,14 @@
       casesList.innerHTML = filtered.map(([id, c]) => {
         const hasVoted = votedCases[id];
         const totalVotes = (c.guiltyVotes || 0) + (c.notGuiltyVotes || 0);
+        const author = c.author || 'Anonymous'; // Fallback for old v5.1 cases
+        const category = c.category || 'Hot Takes'; // Fallback for old v5.1 cases
         return `
           <div class="case-card" data-case="${id}">
             <div class="verdict"></div>
             <div class="case-header">
-              <span class="case-author">@${c.author}</span>
-              <span class="case-category">[${c.category}]</span>
+              <span class="case-author">@${author}</span>
+              <span class="case-category">[${category}]</span>
             </div>
             <div class="case-title">${escapeHtml(c.title)}</div>
             <div class="case-desc">${escapeHtml(c.desc)}</div>
@@ -250,6 +283,27 @@
       }).join('');
     }
 
+    function renderRecs() {
+      const recsList = document.getElementById('recsList');
+      const sorted = Object.entries(allRecs).sort((a, b) => b[1].timestamp - a[1].timestamp);
+
+      if (sorted.length === 0) {
+        recsList.innerHTML = '<div class="empty">No recommendations yet. Drop some heat.</div>';
+        return;
+      }
+
+      recsList.innerHTML = sorted.map(([id, r]) => `
+        <div class="case-card">
+          <div class="case-header">
+            <span class="case-author">@${r.author || 'Anonymous'}</span>
+            <span class="case-category">[Recommendation]</span>
+          </div>
+          <div class="case-title">${escapeHtml(r.title)}</div>
+          <div class="case-desc">${escapeHtml(r.desc)}</div>
+        </div>
+      `).join('');
+    }
+
     function escapeHtml(str) {
       const div = document.createElement('div');
       div.textContent = str;
@@ -263,6 +317,11 @@
       const totalVotes = Object.values(allCases).reduce((sum, c) =>
         sum + (c.guiltyVotes || 0) + (c.notGuiltyVotes || 0), 0);
       document.getElementById('totalVotes').textContent = totalVotes;
+    });
+
+    onValue(recsRef, (snapshot) => {
+      allRecs = snapshot.val() || {};
+      renderRecs();
     });
 
     onValue(usersRef, (snapshot) => {
@@ -279,4 +338,4 @@
     }, 60000);
   </script>
 </body>
-  </html>
+          </html>
