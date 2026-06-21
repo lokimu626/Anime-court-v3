@@ -3,126 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Anime Court v6.1 ⚖️</title>
+  <title>ANIME COURT v6.3</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * { margin: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-    body { background: #0a0a0a; color: #e0e0e0; min-height: 100vh; }
-   .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 20px; border-bottom: 2px solid #00ff88; }
-   .logo { font-size: 28px; font-weight: bold; color: #00ff88; text-align: center; }
-   .subtitle { text-align: center; color: #888; font-size: 12px; margin-top: 5px; }
-   .user-bar { background: #111; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
-   .username-display { color: #00ff88; font-weight: bold; }
-   .username-input { background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; padding: 5px 10px; border-radius: 4px; }
-   .btn { background: #00ff88; color: #0a0a0a; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; }
-   .btn:hover { background: #00cc6a; }
-   .container { max-width: 800px; margin: 0 auto; padding: 20px; }
-   .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #222; flex-wrap: wrap; }
-   .tab { padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; }
-   .tab.active { color: #00ff88; border-bottom-color: #00ff88; }
-   .categories { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-   .category { padding: 5px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 20px; cursor: pointer; font-size: 12px; }
-   .category.active { background: #00ff88; color: #0a0a0a; border-color: #00ff88; }
-   .case-form { background: #111; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #222; }
-   .case-form input,.case-form textarea,.case-form select { width: 100%; background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
-   .case-card { background: #111; padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #222; position: relative; }
-   .case-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-   .case-author { color: #00ff88; font-size: 12px; }
-   .case-category { background: #1a1a2e; color: #00ff88; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
-   .case-title { font-size: 18px; margin-bottom: 8px; color: #fff; }
-   .case-desc { color: #aaa; margin-bottom: 15px; font-size: 14px; }
-   .vote-section { display: flex; gap: 10px; }
-   .vote-btn { flex: 1; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
-   .vote-guilty { background: #ff4444; color: white; }
-   .vote-not-guilty { background: #44ff44; color: #0a0a0a; }
-   .vote-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-   .vote-count { text-align: center; margin-top: 5px; font-size: 12px; color: #666; }
-   .verdict { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; font-weight: bold; opacity: 0; pointer-events: none; }
-   .verdict.show { animation: verdictFade 0.3s ease-out forwards; }
-    @keyframes verdictFade { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1); } }
-   .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
-   .stat-card { background: #111; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #222; }
-   .stat-number { font-size: 24px; color: #00ff88; font-weight: bold; }
-   .stat-label { font-size: 11px; color: #666; margin-top: 5px; }
-   .empty { text-align: center; color: #666; padding: 40px; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a0a;
+      color: #e5e5e5;
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .verdict-flash {
+      animation: flash 0.3s ease-out;
+    }
+    @keyframes flash {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #111; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
   </style>
 </head>
-<body>
-  <div class="header">
-    <div class="logo">⚖️ ANIME COURT v6.1</div>
-    <div class="subtitle">The Chill Verdict System</div>
-  </div>
-
-  <div class="user-bar">
-    <div>Logged in as: <span class="username-display" id="usernameDisplay">@Anonymous</span></div>
-    <div>
-      <input type="text" class="username-input" id="usernameInput" placeholder="Set username" maxlength="15">
-      <button class="btn" onclick="setUsername()">Set</button>
-    </div>
-  </div>
-
-  <div class="container">
-    <div class="stats">
-      <div class="stat-card">
-        <div class="stat-number" id="totalCases">0</div>
-        <div class="stat-label">TOTAL CASES</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number" id="totalVotes">0</div>
-        <div class="stat-label">TOTAL VOTES</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number" id="activeUsers">1</div>
-        <div class="stat-label">JURORS ONLINE</div>
+<body class="min-h-screen">
+  <div class="max-w-2xl mx-auto p-4">
+    <!-- Header -->
+    <div class="glass rounded-3xl p-6 mb-6 text-center">
+      <h1 class="text-3xl font-extrabold mb-1">ANIME COURT ⚖️</h1>
+      <p class="text-gray-400 text-sm">v6.3 • Argue your case</p>
+      <div class="flex justify-center gap-6 mt-4 text-sm">
+        <div><span class="text-teal-400 font-bold" id="totalCases">00</span> Cases</div>
+        <div><span class="text-teal-400 font-bold" id="totalVotes">00</span> Votes</div>
+        <div><span class="text-teal-400 font-bold" id="activeUsers">01</span> Online</div>
       </div>
     </div>
 
-    <div class="tabs">
-      <div class="tab active" onclick="switchTab('courtroom')">Courtroom</div>
-      <div class="tab" onclick="switchTab('file')">File Case</div>
-      <div class="tab" onclick="switchTab('recs')">Recommendations</div>
+    <!-- Username -->
+    <div class="glass rounded-2xl p-4 mb-6">
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-gray-400">Filing as: <span id="usernameDisplay" class="text-teal-400 font-bold">@Anonymous</span></span>
+        <div class="flex gap-2">
+          <input type="text" id="usernameInput" placeholder="Set username" class="bg-black/30 border border-white/10 rounded-lg px-3 py-1 text-sm w-32 focus:outline-none focus:border-teal-400">
+          <button onclick="setUsername()" class="bg-teal-500 hover:bg-teal-400 text-black font-bold px-3 py-1 rounded-lg text-sm">Set</button>
+        </div>
+      </div>
     </div>
 
-    <div class="categories" id="categories">
-      <div class="category active" onclick="filterCategory('All')">[All]</div>
-      <div class="category" onclick="filterCategory('Hot Takes')">[Hot Takes]</div>
-      <div class="category" onclick="filterCategory('Power Scaling')">[Power Scaling]</div>
-      <div class="category" onclick="filterCategory('Waifu Wars')">[Waifu Wars]</div>
-      <div class="category" onclick="filterCategory('Animation')">[Animation]</div>
-      <div class="category" onclick="filterCategory('Plot Holes')">[Plot Holes]</div>
+    <!-- Tabs -->
+    <div class="flex mb-6 glass rounded-2xl p-1">
+      <button id="courtroomTab" onclick="switchTab('courtroom')" class="flex-1 py-3 text-teal-400 border-b-2 border-teal-400 font-bold">Courtroom</button>
+      <button id="fileTab" onclick="switchTab('file')" class="flex-1 py-3 text-gray-500 font-bold">File Case</button>
+      <button id="recsTab" onclick="switchTab('recs')" class="flex-1 py-3 text-gray-500 font-bold">Recs</button>
     </div>
 
+    <!-- Courtroom View -->
     <div id="courtroomView">
+      <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+        <button onclick="filterCategory('All')" class="category-btn bg-teal-500 text-black px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap">All</button>
+        <button onclick="filterCategory('Hot Takes')" class="category-btn glass px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap">Hot Takes</button>
+        <button onclick="filterCategory('Power Scaling')" class="category-btn glass px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap">Power Scaling</button>
+        <button onclick="filterCategory('Adaptation')" class="category-btn glass px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap">Adaptation</button>
+        <button onclick="filterCategory('Characters')" class="category-btn glass px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap">Characters</button>
+      </div>
       <div id="casesList"></div>
     </div>
 
-    <div id="fileView" style="display: none;">
-      <div class="case-form">
-        <h3 style="margin-bottom: 15px; color: #00ff88;">File New Case</h3>
-        <select id="caseCategory">
-          <option value="Hot Takes">Hot Takes</option>
-          <option value="Power Scaling">Power Scaling</option>
-          <option value="Waifu Wars">Waifu Wars</option>
-          <option value="Animation">Animation</option>
-          <option value="Plot Holes">Plot Holes</option>
+    <!-- File Case View -->
+    <div id="fileView" class="hidden">
+      <div class="glass rounded-2xl p-6">
+        <h2 class="text-xl font-bold mb-4">File a New Case</h2>
+        <input type="text" id="caseTitle" placeholder="Case title: 'Sakura was useless'" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 mb-3 focus:outline-none focus:border-teal-400">
+        <textarea id="caseDesc" placeholder="Present your evidence..." rows="4" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 mb-3 focus:outline-none focus:border-teal-400"></textarea>
+        <select id="caseCategory" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 mb-4 focus:outline-none focus:border-teal-400">
+          <option>Hot Takes</option>
+          <option>Power Scaling</option>
+          <option>Adaptation</option>
+          <option>Characters</option>
         </select>
-        <input type="text" id="caseTitle" placeholder="Case Title: e.g., 'Sakura is useless'" maxlength="100">
-        <textarea id="caseDesc" placeholder="Your argument... Keep it chill." rows="4" maxlength="500"></textarea>
-        <button class="btn" style="width: 100%;" onclick="fileCase()">Submit to Court</button>
+        <button onclick="fileCase()" class="w-full bg-teal-500 hover:bg-teal-400 text-black font-bold py-3 rounded-xl">File Case</button>
       </div>
     </div>
 
-    <div id="recsView" style="display: none;">
-      <div class="case-form">
-        <h3 style="margin-bottom: 15px; color: #00ff88;">Recommend Anime</h3>
-        <input type="text" id="recTitle" placeholder="Anime Title" maxlength="100">
-        <textarea id="recDesc" placeholder="Why should we watch it? Keep it chill." rows="4" maxlength="500"></textarea>
-        <button class="btn" style="width: 100%;" onclick="fileRec()">Post Recommendation</button>
+    <!-- Recs View -->
+    <div id="recsView" class="hidden">
+      <div class="glass rounded-2xl p-6 mb-4">
+        <h2 class="text-xl font-bold mb-4">Drop a Recommendation</h2>
+        <input type="text" id="recTitle" placeholder="Anime name" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 mb-3 focus:outline-none focus:border-teal-400">
+        <textarea id="recDesc" placeholder="Why it slaps..." rows="3" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 mb-4 focus:outline-none focus:border-teal-400"></textarea>
+        <button onclick="fileRec()" class="w-full bg-teal-500 hover:bg-teal-400 text-black font-bold py-3 rounded-xl">Post Rec</button>
       </div>
       <div id="recsList"></div>
     </div>
   </div>
 
-  <script type="module">
+<script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
   import { getDatabase, ref, push, onValue, set, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
@@ -151,7 +130,7 @@
   let votedCases = JSON.parse(localStorage.getItem('votedCases') || '{}');
 
   document.getElementById('usernameDisplay').textContent = '@' + currentUser;
-  document.getElementById('usernameInput').value = currentUser === 'Anonymous'? '' : currentUser;
+  document.getElementById('usernameInput').value = currentUser === 'Anonymous' ? '' : currentUser;
 
   window.setUsername = () => {
     const newName = document.getElementById('usernameInput').value.trim().replace(/[^a-zA-Z0-9_]/g, '');
@@ -170,9 +149,9 @@
     document.getElementById(tab + 'Tab').classList.add('text-teal-400', 'border-b-2', 'border-teal-400');
     document.getElementById(tab + 'Tab').classList.remove('text-gray-500');
 
-    document.getElementById('courtroomView').classList.toggle('hidden', tab!== 'courtroom');
-    document.getElementById('fileView').classList.toggle('hidden', tab!== 'file');
-    document.getElementById('recsView').classList.toggle('hidden', tab!== 'recs');
+    document.getElementById('courtroomView').classList.toggle('hidden', tab !== 'courtroom');
+    document.getElementById('fileView').classList.toggle('hidden', tab !== 'file');
+    document.getElementById('recsView').classList.toggle('hidden', tab !== 'recs');
   };
 
   window.filterCategory = (cat) => {
@@ -190,7 +169,7 @@
     const title = document.getElementById('caseTitle').value.trim();
     const desc = document.getElementById('caseDesc').value.trim();
     const category = document.getElementById('caseCategory').value;
-    if (!title ||!desc) return alert('Fill all fields');
+    if (!title || !desc) return alert('Fill all fields');
     if (currentUser === 'Anonymous') return alert('Set a username first');
 
     push(casesRef, {
@@ -208,7 +187,7 @@
   window.fileRec = () => {
     const title = document.getElementById('recTitle').value.trim();
     const desc = document.getElementById('recDesc').value.trim();
-    if (!title ||!desc) return alert('Fill all fields');
+    if (!title || !desc) return alert('Fill all fields');
     if (currentUser === 'Anonymous') return alert('Set a username first');
 
     push(recsRef, { title, desc, author: currentUser, timestamp: Date.now() });
@@ -256,8 +235,8 @@
     if (!card) return;
     const verdictEl = document.createElement('div');
     verdictEl.className = 'verdict-flash absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-extrabold pointer-events-none';
-    verdictEl.textContent = verdict === 'guilty'? 'GUILTY' : 'NOT GUILTY';
-    verdictEl.style.color = verdict === 'guilty'? '#ef4444' : '#22c55e';
+    verdictEl.textContent = verdict === 'guilty' ? 'GUILTY' : 'NOT GUILTY';
+    verdictEl.style.color = verdict === 'guilty' ? '#ef4444' : '#22c55e';
     card.appendChild(verdictEl);
     setTimeout(() => verdictEl.remove(), 300);
   }
@@ -293,36 +272,36 @@
           <h3 class="text-xl font-bold mb-2">${escapeHtml(c.title)}</h3>
           <p class="text-gray-400 text-sm mb-5">${escapeHtml(c.desc)}</p>
           <div class="grid grid-cols-2 gap-3 mb-4">
-            <button onclick="vote('${id}', 'guilty')" ${hasVoted? 'disabled' : ''}
+            <button onclick="vote('${id}', 'guilty')" ${hasVoted ? 'disabled' : ''}
                     class="bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-400 font-bold py-3 rounded-xl transition disabled:opacity-30 disabled:cursor-not-allowed">
               GUILTY ${gVotes}
             </button>
-            <button onclick="vote('${id}', 'notGuilty')" ${hasVoted? 'disabled' : ''}
+            <button onclick="vote('${id}', 'notGuilty')" ${hasVoted ? 'disabled' : ''}
                     class="bg-green-500/20 hover:bg-green-500/30 border border-green-500/50 text-green-400 font-bold py-3 rounded-xl transition disabled:opacity-30 disabled:cursor-not-allowed">
               NOT GUILTY ${ngVotes}
             </button>
           </div>
           
-          <button onclick="toggleComments('${id}')" class="w-full text-left text-sm text-teal-400/70 hover:text-teal-400 mb-3">
+          <button onclick="toggleComments('${id}')" class="w-full glass hover:bg-white/10 border border-white/10 text-teal-400 text-sm font-semibold py-2 px-4 rounded-xl transition mb-4">
             Arguments (${commentCount}) ▼
           </button>
           
           <div id="comments-${id}" class="hidden">
-            <div class="space-y-3 mb-4 max-h-60 overflow-y-auto">
+            <div class="space-y-3 mb-4 max-h-60 overflow-y-auto pr-2">
               ${caseComments.map(([cid, com]) => `
-                <div class="bg-black/20 rounded-lg p-3">
-                  <div class="flex justify-between items-center mb-1">
-                    <span class="text-teal-400 text-xs font-semibold">@${com.author}</span>
+                <div class="glass rounded-xl p-3 border border-white/5">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-teal-400 text-xs font-bold">@${com.author}</span>
                     <span class="text-gray-500 text-xs">${timeAgo(com.timestamp)}</span>
                   </div>
-                  <p class="text-sm text-gray-300">${escapeHtml(com.text)}</p>
+                  <p class="text-sm text-gray-200">${escapeHtml(com.text)}</p>
                 </div>
-              `).join('') || '<div class="text-gray-500 text-sm text-center py-4">No arguments yet. Drop the first take.</div>'}
+              `).join('') || '<div class="text-gray-500 text-sm text-center py-4 glass rounded-xl">No arguments yet. Drop the first take.</div>'}
             </div>
             <div class="flex gap-2">
               <input type="text" id="comment-input-${id}" placeholder="Drop your argument..." maxlength="300"
-                     class="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
-              <button onclick="postComment('${id}')" class="bg-teal-500 hover:bg-teal-400 text-black font-bold px-4 rounded-lg text-sm">
+                     class="flex-1 glass border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/50 transition">
+              <button onclick="postComment('${id}')" class="bg-teal-500 hover:bg-teal-400 active:scale-95 text-black font-bold px-5 rounded-xl text-sm transition">
                 Post
               </button>
             </div>
@@ -396,11 +375,10 @@
   });
 
   setInterval(() => {
-    if (currentUser!== 'Anonymous') {
+    if (currentUser !== 'Anonymous') {
       set(ref(db, 'users/' + currentUser + '/lastSeen'), Date.now());
     }
   }, 60000);
-          </script>
-    
+</script>
 </body>
-          </html>
+  </html>
